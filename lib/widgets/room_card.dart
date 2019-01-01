@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../room_page.dart';
+import '../pages/room_page.dart';
 
 class RoomCard extends StatefulWidget {
   RoomCard({Key key, this.roomName}) : super(key: key);
@@ -28,13 +28,7 @@ class _RoomCardState extends State<RoomCard> {
             ),
           ),
           onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => RoomPage(
-                          roomName: widget.roomName,
-                        )));
-          },
+            print("hello");          },
         ),
       ),
     );

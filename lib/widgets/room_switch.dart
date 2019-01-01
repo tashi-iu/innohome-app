@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../util/network_util.dart';
+import '../util/network_util.dart';
 
 class RoomSwitch extends StatefulWidget {
   RoomSwitch({Key key, this.roomName, this.title, this.toggle}) : super(key: key);
