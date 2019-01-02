@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:smart_switch_v2/pages/home_page.dart';
+import 'package:smart_switch_v2/pages/room_page.dart';
 
 import '../util/database_helper.dart';
 import '../model/room.dart';
@@ -15,9 +15,8 @@ class AddRoom extends StatefulWidget {
 }
 
 class _AddRoomState extends State<AddRoom> {
-  
   final _formKey = GlobalKey<FormState>();
-  
+
   TextEditingController _roomNameController;
 
   int _houseId = 1;
@@ -27,17 +26,15 @@ class _AddRoomState extends State<AddRoom> {
   var db = DatabaseHelper();
 
   @override
-  void initState(){
-
+  void initState() {
     _roomNameController = TextEditingController();
     super.initState();
   }
 
-
-
   //function to get image
   Future getImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera, maxHeight: 500, maxWidth: 500);
+    var image = await ImagePicker.pickImage(
+        source: ImageSource.camera, maxHeight: 500, maxWidth: 500);
 
     setState(() {
       _roomImage = image;
@@ -47,67 +44,106 @@ class _AddRoomState extends State<AddRoom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        title: Text("Add room", style: TextStyle(color: Colors.white),),
-      ),
-      body:Form(
-      key: _formKey,
-      child: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
-        children: <Widget>[
-          TextFormField(
-            textAlign: TextAlign.center,
-            controller: _roomNameController,
-            decoration: InputDecoration(
-              labelText: 'Room Name',
-              hintText: "Childrens' Bedroom",
-            ),
-            validator: (value) {
-              if (value.isEmpty || _roomImage == null) {
-                return "Please enter the name and image of the room";
-              }
-            },
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
+          elevation: 0,
+          centerTitle: true,
+          title: Text(
+            "Add Room",
+            style: TextStyle(color: Colors.white),
           ),
-          Padding(padding: EdgeInsets.all(5)),
-          Column(children: <Widget>[
-            Center(
-              child: Container(
-                  child: _roomImage == null
-                      ? RaisedButton(
-                          child: Text("add Image"),
-                          onPressed: () {
-                            getImage();
-                          },
-                        )
-                      : Column(children: <Widget>[Image.file(_roomImage)])),
-            ),
-            _roomImage != null? RaisedButton(
-              child: Text("change image"),
-              onPressed: () {
-                getImage();
-              }, 
-            ) : Container(),
-            RaisedButton(
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.done),
               onPressed: () async {
                 if (_formKey.currentState.validate() && _roomImage != null) {
                   setState(() {
-                    _roomName = _roomNameController.text;                
+                    _roomName = _roomNameController.text;
                   });
 
                   Room room = Room(_houseId, _roomName, _roomImage);
                   int res = await db.saveRoom(room);
-                  if(res != 0){
+                  if (res != 0) {
                     Navigator.pushReplacementNamed(context, '/rooms');
                   }
                 }
               },
-              child: Text("Add room"),
-            ),
-          ])
-        ],
-      ),
-    ));
+            )
+          ],
+        ),
+        body: Form(
+          key: _formKey,
+          child: ListView(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: TextFormField(
+                  controller: _roomNameController,
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.camera_alt),
+                      onPressed: () {
+                        getImage();
+                      },
+                    ),
+                    border: OutlineInputBorder(),
+                    labelText: 'Room Name',
+                    hintText: "Childrens' Bedroom",
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty || _roomImage == null) {
+                      return "Make sure you entered both the name and image of the room";
+                    }
+                  },
+                ),
+              ),
+              Padding(padding: EdgeInsets.all(32),),
+              Container(
+                child: _roomImage != null
+                    ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[Container(
+                        color: Colors.black54,
+                      margin: EdgeInsets.all(62),
+                      padding: EdgeInsets.all(2),
+                      child: Image.file(_roomImage,),
+                    ),],
+                    )
+                    : Container(
+                        padding: EdgeInsets.symmetric(horizontal: 32),
+                        child: InkWell(
+                          splashColor: Colors.transparent,
+                          onTap: () {
+                            getImage();
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(
+                                Icons.image,
+                                size: 64.0,
+                                color: Colors.grey,
+                              ),
+                              Text("No background image selected",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black54,
+                                      fontSize: 16.0)),
+                              Text(
+                                  "Click on the camera icon or tap here to upload an image",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black54,
+                                      fontSize: 14.0)),
+                            ],
+                          ),
+                        ),
+                      ),
+              ),
+            ],
+          ),
+        ));
   }
 }

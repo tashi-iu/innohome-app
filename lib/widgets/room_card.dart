@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../pages/room_page.dart';
 
 class RoomCard extends StatefulWidget {
   RoomCard({Key key, this.roomName}) : super(key: key);

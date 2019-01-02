@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class Login extends StatefulWidget {
+class SignUp extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _SignUp createState() => _SignUp();
 }
 
-class _LoginState extends State<Login> {
+class _SignUp extends State<SignUp> {
   final _signUpKey = GlobalKey<FormState>();
 
   String email;
@@ -85,6 +85,18 @@ class _LoginState extends State<Login> {
     return 'Email is not valid';
   }
 
+  String _validateNoOfRooms(String value){
+    if(value.isEmpty){
+      return "Number of rooms cannot be empty";
+    }
+
+    if(value != int){
+      return "Number of rooms should be a integer";
+    }
+
+    return null;
+  }
+
   Widget _buildEmailField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
@@ -125,6 +137,13 @@ class _LoginState extends State<Login> {
     );
   }
 
+  Widget _buildNumberOfRoomsField(){
+    return TextFormField(
+      keyboardType: TextInputType.number,
+      validator: _validateNoOfRooms,
+    );
+  }
+
   Widget _buildSubmitButton(){
     return RaisedButton(
       child: Text("Sign up"),
@@ -148,9 +167,11 @@ class _LoginState extends State<Login> {
               children: <Widget>[
                 _buildEmailField(),
                 _buildUserIdField(),
-                _buildUserIdField(),
                 _buildPasswordField(),
                 _buildPasswordConirmField(),
+                _buildNumberOfRoomsField(),
+                Padding(padding: EdgeInsets.all(5),),
+                _buildSubmitButton(),
               ],
             ),
           ),

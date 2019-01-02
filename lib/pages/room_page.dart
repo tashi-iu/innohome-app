@@ -8,15 +8,15 @@ import '../scoped_model/scoped_room.dart';
 
 import '../model/room.dart';
 
-class Home extends StatefulWidget {
+class RoomPage extends StatefulWidget {
   final RoomModel model;
-  Home({this.model});
+  RoomPage({this.model});
 
   @override
-  _HomeState createState() => _HomeState();
+  _RoomPageState createState() => _RoomPageState();
 }
 
-class _HomeState extends State<Home> {
+class _RoomPageState extends State<RoomPage> {
   var db = DatabaseHelper();
 
   @override
@@ -27,14 +27,14 @@ class _HomeState extends State<Home> {
 
   Widget _buildAppBar() {
     return AppBar(
+      iconTheme: IconThemeData(color: Colors.white),
       centerTitle: true,
       title: Text(
         "Rooms",
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white, ),
       ),
       actions: <Widget>[
         IconButton(
-          color: Colors.white,
           icon: Icon(Icons.settings),
           onPressed: () {
             Navigator.push(
@@ -61,7 +61,7 @@ class _HomeState extends State<Home> {
           ),
           Container(
             child: Text(
-                "This is innoHome, we are the leading privider of smart Switch in Bhutan."),
+                "This is innoHome, we are the leading provider of smart switch in Bhutan."),
           )
         ],
       ),
@@ -74,12 +74,22 @@ class _HomeState extends State<Home> {
         Room room = model.getRoom(index);
         return 
           Container(
-            margin: EdgeInsets.all(4),
+            margin: EdgeInsets.all(8),
               decoration: BoxDecoration(
+                boxShadow: [BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 1.0,
+                    offset: Offset(1,1),
+                  )],
                 borderRadius: BorderRadius.all(Radius.circular(8)),
-                image: DecorationImage(image: MemoryImage(room.roomImage), fit: BoxFit.cover)
+                image: DecorationImage(image: MemoryImage(room.roomImage), fit: BoxFit.cover,)
               ),
-              child: Text(room.roomName)//Image.memory(room.roomImage),
+              child: Container(
+                padding: EdgeInsets.all(18.0),
+                decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+                child: Center(child:Text(room.roomName, textAlign: TextAlign.center, style: TextStyle(color: Colors.white.withAlpha(230), fontWeight: FontWeight.w600, fontSize: 18.0,  ),),),)//Image.memory(room.roomImage),
             
       );
     });
@@ -90,9 +100,15 @@ class _HomeState extends State<Home> {
     return Scaffold(
       drawer: _buildDrawer(),
       appBar: _buildAppBar(),
-      body: ScopedModelDescendant(
+      body: Container(
+        decoration: BoxDecoration(
+          
+          image: DecorationImage(fit: BoxFit.cover, image: AssetImage("assets/bg.jpg",))
+        ),
+        child: ScopedModelDescendant(
           builder: (BuildContext context, Widget child, RoomModel model) {
         return GridView.count(
+          padding: EdgeInsets.fromLTRB(4,8,4,4),
             crossAxisCount: 2,
             children: List.generate(
                 widget.model.length != null ? widget.model.length : 0, (index) {
@@ -100,6 +116,7 @@ class _HomeState extends State<Home> {
               return buildRoomCard(index);
             }));
       }),
+      ),
     );
   }
 }

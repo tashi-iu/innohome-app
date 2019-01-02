@@ -35,7 +35,6 @@ class RoomModel extends Model{
     return _rooms[index];
   }
 
-
 }
 
 
