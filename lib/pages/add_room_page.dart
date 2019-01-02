@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:smart_switch_v2/pages/room_page.dart';
+import 'package:smart_switch_v2/pages/house_page.dart';
 
 import '../util/database_helper.dart';
 import '../model/room.dart';

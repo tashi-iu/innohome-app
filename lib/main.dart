@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_switch_v2/pages/room_page.dart';
+import 'package:smart_switch_v2/pages/house_page.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import './util/database_helper.dart';
@@ -23,9 +23,9 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.cyan,
           ),
-          home: RoomPage(model: _roomModel,),
+          home: HousePage(model: _roomModel,),
           routes: {
-            '/rooms': (BuildContext context) => RoomPage(model: _roomModel),
+            '/rooms': (BuildContext context) => HousePage(model: _roomModel),
           },
         ));
   }

@@ -84,7 +84,6 @@ class _SettingsState extends State<Settings> {
               builder: (context) {
                 return Dialog(
                   child: Container(
-                    
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(8.0)),
                     ),
@@ -129,7 +128,10 @@ class _SettingsState extends State<Settings> {
             : this.houseName),
         leading: Padding(
           padding: EdgeInsets.only(left: 8),
-          child: Icon(Icons.home, color: Colors.cyan,),
+          child: Icon(
+            Icons.home,
+            color: Colors.cyan,
+          ),
         ));
   }
 
@@ -140,7 +142,13 @@ class _SettingsState extends State<Settings> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => AddRoom()));
       },
-      leading: Padding(child: Icon(Icons.border_all, color: Colors.cyan,), padding: EdgeInsets.only(left: 8),),
+      leading: Padding(
+        child: Icon(
+          Icons.border_all,
+          color: Colors.cyan,
+        ),
+        padding: EdgeInsets.only(left: 8),
+      ),
     );
   }
 
@@ -164,9 +172,13 @@ class _SettingsState extends State<Settings> {
       body: ListView(
         children: <Widget>[
           _buildHouseSetting(),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 16.0), child:Divider()),
+          Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Divider()),
           _buildRoomSetting(),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 16.0), child:Divider()),
+          Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Divider()),
         ],
       ),
     );
