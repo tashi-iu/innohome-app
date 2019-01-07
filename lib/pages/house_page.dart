@@ -2,21 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:smart_switch_v2/pages/settings.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import './room_page.dart';
+
 import '../util/database_helper.dart';
 
 import '../scoped_model/scoped_room.dart';
 
 import '../model/room.dart';
 
-class RoomPage extends StatefulWidget {
+class HousePage extends StatefulWidget {
   final RoomModel model;
-  RoomPage({this.model});
+  HousePage({this.model});
 
   @override
-  _RoomPageState createState() => _RoomPageState();
+  _HousePageState createState() => _HousePageState();
 }
 
-class _RoomPageState extends State<RoomPage> {
+class _HousePageState extends State<HousePage> {
   var db = DatabaseHelper();
 
   @override
@@ -70,44 +72,52 @@ class _RoomPageState extends State<RoomPage> {
     );
   }
 
+
   Widget buildRoomCard(int index) {
     return ScopedModelDescendant(
         builder: (BuildContext context, Widget child, RoomModel model) {
       Room room = model.getRoom(index);
-      return Container(
-          margin: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 1.0,
-                  offset: Offset(1, 1),
-                )
-              ],
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-              image: DecorationImage(
-                image: MemoryImage(room.roomImage),
-                fit: BoxFit.cover,
-              )),
-          child: Container(
-            padding: EdgeInsets.all(18.0),
-            decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
-                borderRadius: BorderRadius.all(Radius.circular(8))),
-            child: Center(
-              child: Text(
-                room.roomName,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withAlpha(230),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.0,
-                ),
-              ),
-            ),
-          ) //Image.memory(room.roomImage),
+      return Material(
+          child: InkWell(
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(
+                builder: (BuildContext context) => RoomPage()
+              ));
+            },
+              child: Container(
+                  margin: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 1.0,
+                          offset: Offset(1, 1),
+                        )
+                      ],
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      image: DecorationImage(
+                        image: MemoryImage(room.roomImage),
+                        fit: BoxFit.cover,
+                      )),
+                  child: Container(
+                    padding: EdgeInsets.all(18.0),
+                    decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.4),
+                        borderRadius: BorderRadius.all(Radius.circular(8))),
+                    child: Center(
+                      child: Text(
+                        room.roomName,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white.withAlpha(230),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                  ) //Image.memory(room.roomImage),
 
-          );
+                  )));
     });
   }
 

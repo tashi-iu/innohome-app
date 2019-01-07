@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../util/network_util.dart';
+
+
 class SignUp extends StatefulWidget {
   @override
   _SignUp createState() => _SignUp();
@@ -11,7 +14,8 @@ class _SignUp extends State<SignUp> {
   String email;
   String password;
   String deviceId;
-  String userId;
+  String username;
+  int noOfRooms;
 
   TextEditingController _passwordController;
 
@@ -23,7 +27,7 @@ class _SignUp extends State<SignUp> {
 
   String _validateUserId(String value){
     if (value.isEmpty){
-      return "Enter user Id";
+      return "Enter user name";
     }
 
     if(value.length < 5){
@@ -38,7 +42,7 @@ class _SignUp extends State<SignUp> {
       return null;
     }
 
-    return 'User ID is not valid';
+    return 'User name is not valid';
   }
 
   String _validatePassword(String value){
@@ -107,12 +111,12 @@ class _SignUp extends State<SignUp> {
     );
   }
 
-  Widget _buildUserIdField() {
+  Widget _buildUsernameField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
       validator: _validateUserId,
       onSaved: (value) {
-        this.userId = value;
+        this.username = value;
       },
     );
   }
@@ -141,15 +145,20 @@ class _SignUp extends State<SignUp> {
     return TextFormField(
       keyboardType: TextInputType.number,
       validator: _validateNoOfRooms,
-    );
+      onSaved: (value) {
+        this.noOfRooms = value as int;
+        print(noOfRooms);
+      });
   }
 
   Widget _buildSubmitButton(){
     return RaisedButton(
       child: Text("Sign up"),
-      onPressed: () {
+      onPressed: () async {
         if(_signUpKey.currentState.validate()){
           print("validation completed");
+          var obj = await signUp(email, username, deviceId, noOfRooms, password);
+          print(obj);
         }
       },   
     );
@@ -166,7 +175,7 @@ class _SignUp extends State<SignUp> {
             child: Column(
               children: <Widget>[
                 _buildEmailField(),
-                _buildUserIdField(),
+                _buildUsernameField(),
                 _buildPasswordField(),
                 _buildPasswordConirmField(),
                 _buildNumberOfRoomsField(),

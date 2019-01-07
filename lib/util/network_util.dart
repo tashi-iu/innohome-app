@@ -20,7 +20,6 @@ Future<Map> signUp(String email, String username, String deviceId, int noOfRooms
     "deviceId": deviceId,
     "noOfRooms": noOfRooms,
     "password": password
-
   };
 
   http.Response response = await http.post(sourceURL, body: json.encode(body));
