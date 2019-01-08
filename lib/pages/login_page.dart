@@ -65,6 +65,8 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: () {
         if(_signUpKey.currentState.validate()){
           print("validation completed");
+          
+
         }
       },   
     );

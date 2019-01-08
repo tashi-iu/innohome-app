@@ -8,11 +8,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 import '../model/house.dart';
+import '../model/user.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
 
   factory DatabaseHelper() => _instance;
+
+  final String tableUser = "userTable";
+  final String columnUserId = "id";
+  final String columnUserToken = "userToken";
 
   final String tableHouse = "houseTable";
   final String columnHouseId = "id";
@@ -52,7 +57,13 @@ class DatabaseHelper {
   }
 
   void _onCreate(Database db, int version) async {
-    await db.execute("""
+      await db.execute("""
+            CREATE TABLE $tableUser(
+              $columnUserId INT PRIMARY KEY,
+              $columnUserToken TEXT
+            )""");
+      
+      await db.execute("""
             CREATE TABLE $tableHouse(
               $columnHouseId INTEGER PRIMARY KEY,
               $columnHouseName TEXT NOT NULL 
@@ -76,6 +87,24 @@ class DatabaseHelper {
         FOREIGN KEY ($columnForeignRoomId) REFERENCES $tableHouse ($columnHouseId)
       )
       """);
+  }
+
+
+  //USER ORM
+  Future<int> saveUser(User user) async {
+    var dbClient = await db;
+
+    int res = await dbClient.insert("$tableUser", user.toMap());
+    return res;
+  }
+
+  Future<User> getUser(int id) async {
+    var dbClient = await db;
+
+    var result = await dbClient.rawQuery("SELECT * FROM $tableUser WHERE $columnUserId=$id");
+    if(result.length == 0) return null;
+
+    return User.fromMap(result.first);
   }
 
   //HOUSE ORM
