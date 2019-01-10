@@ -1,4 +1,4 @@
-package com.example.smartswitchv2;
+package com.innohome.smartswitch;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

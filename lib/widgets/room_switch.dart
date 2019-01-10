@@ -24,7 +24,7 @@ class _RoomSwitchState extends State<RoomSwitch> {
           onChanged: (bool value) {
             setState(() {
               widget.toggle = value;
-              postData(widget.roomName, widget.title, widget.toggle.toString());
+              //postData(widget.roomName, widget.title, widget.toggle.toString());
             });
           },
         ),
