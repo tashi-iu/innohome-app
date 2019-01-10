@@ -28,6 +28,8 @@ class LoginInputTextField extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 4),
       child: TextFormField(
         decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.4),
             labelText: labelText,
             hintText: hintText,
             prefixIcon: prefixIcon,

@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import './pages/house_page.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import './util/database_helper.dart';
-import './pages/signup_page.dart';
-
+import './pages/landing_page.dart';
 
 import './scoped_model/scoped_room.dart';
 
@@ -25,7 +23,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.cyan,
           ),
-          home:  SignUp(), //HousePage(model: _roomModel,),
+          home:  LandingPage(), //HousePage(model: _roomModel,),
           routes: {
             '/rooms': (BuildContext context) => HousePage(model: _roomModel),
           },
