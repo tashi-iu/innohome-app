@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:smart_switch_v2/util/database_helper.dart';
 
 import '../widgets/login_btn.dart';
 import '../widgets/login_field.dart';
 
 import 'dart:ui';
+
+import '../model/user.dart';
+
+import '../util/network_util.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,27 +18,29 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _signUpKey = GlobalKey<FormState>();
 
+  var db = DatabaseHelper();
   String password;
-  String userId;
+  String email;
 
-  String _validateUserId(String value) {
+  String _validateEmail(String value) {
     if (value.isEmpty) {
-      return "Enter user Id";
+      // The form is empty
+      return "Email address cannot be empty";
     }
-
-    if (value.length < 5) {
-      return "Minimum length for user name is 5";
-    }
-
-    String p = "[A-Za-z0-9]";
-
+    //regular expression for email addresses
+    String p = "[a-zA-Z0-9\+\.\_\%\-\+]{1,256}" +
+        "\\@" +
+        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+        "(" +
+        "\\." +
+        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+        ")+";
     RegExp regExp = new RegExp(p);
 
     if (regExp.hasMatch(value)) {
+      //the email is valid
       return null;
     }
-
-    return 'User ID is not valid';
   }
 
   String _validatePassword(String value) {
@@ -60,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
             padding: EdgeInsets.symmetric(horizontal: 18.0),
             color: Colors.white.withOpacity(0.8),
             child: Form(
-              autovalidate: true,
+              autovalidate: false,
               key: _signUpKey,
               child: _loginPage(),
             ),
@@ -76,30 +83,58 @@ class _LoginPageState extends State<LoginPage> {
       children: <Widget>[
         LoginButton(
           child: Text(
-                "LOG IN",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    shadows: [
-                      Shadow(
-                          color: Colors.deepPurple,
-                          offset: Offset(1, 1),
-                          blurRadius: 1),
-                    ],),
-              ),
+            "LOG IN",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              shadows: [
+                Shadow(
+                    color: Colors.deepPurple,
+                    offset: Offset(1, 1),
+                    blurRadius: 1),
+              ],
+            ),
+          ),
           gradient: LinearGradient(
-                colors: <Color>[
-                  Colors.cyanAccent,
-                  Colors.blue[600],
-                  Colors.blue[800],
-                  Colors.deepPurple[900]
-                ],
-              ),
-          onPressed: () {
+            colors: <Color>[
+              Colors.cyanAccent,
+              Colors.blue[600],
+              Colors.blue[800],
+              Colors.deepPurple[900]
+            ],
+          ),
+          onPressed: () async{
             if (_signUpKey.currentState.validate()) {
               print("validation completed");
+
+              Map<String, String> response = await login(email, password);
+
+          String error_message = response["error_message"];
+          String x_auth = response["x_auth"];
+
+          if (error_message == "null" && x_auth == "null") {
+            
+            //pop up
+            print("oops sth is very wrong");
+          } else if (x_auth == "null") {
+            print(error_message);
+            print("hello from error");
+            //pop up
+          }else if(error_message == "null"){
+
+              User user = User.fromMap({
+                "userId":1,
+                "userToken": x_auth 
+              });
+
+              int result = await db.updateUser(user);
+
+              if(result != 0){
+                print("update successful");
+              }
             }
+          }
           },
         ),
         LoginInputTextField(
@@ -112,12 +147,12 @@ class _LoginPageState extends State<LoginPage> {
           },
         ),
         LoginInputTextField(
-          labelText: "Username",
-          hintText: "dorji72",
+          labelText: "Email",
+          hintText: "dorji72@gmail.com",
           obscureText: false,
-          validator: _validateUserId,
+          validator: _validateEmail,
           onSaved: (value) {
-            this.userId = value;
+            this.email = value;
           },
         ),
         Padding(

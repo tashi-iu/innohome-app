@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_switch_v2/util/database_helper.dart';
 import './pages/house_page.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -6,11 +7,34 @@ import './pages/landing_page.dart';
 
 import './scoped_model/scoped_room.dart';
 
-void main() {
-  runApp(MyApp());
+import './model/user.dart';
+
+void main() async{
+  var db = DatabaseHelper();
+
+  User user = await db.getUser(1);
+
+  Map<String, dynamic> userObj;
+  if(user != null){
+    userObj = {
+      "id": user.id,
+      "token": user.userToken
+    };
+  }else{
+    userObj = {
+      "id": null,
+      "token": null
+    };
+    
+  }
+
+  runApp(MyApp(userObj));
 }
 
 class MyApp extends StatelessWidget {
+
+  Map<String, dynamic> user;
+  MyApp(this.user);
 
   final _roomModel = RoomModel();
   @override
@@ -23,9 +47,10 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.cyan,
           ),
-          home:  LandingPage(), //HousePage(model: _roomModel,),
+          home:  this.user["token"] != null? HousePage(model: _roomModel,): LandingPage(),
           routes: {
             '/rooms': (BuildContext context) => HousePage(model: _roomModel),
+            
           },
         ));
   }

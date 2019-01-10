@@ -11,7 +11,7 @@ class User{
   }
 
   String get userToken => _userToken;
-
+  int get id => _userId;
   set userToken(String token){
     this._userToken = token;
   }
@@ -29,7 +29,7 @@ class User{
   }
 
   User.fromMap(Map<String, dynamic> map) {
-    this._userId = map["userToken"];
-    this._userToken = map["id"];
+    this._userId = map["id"];
+    this._userToken = map["userToken"];
   }
 }

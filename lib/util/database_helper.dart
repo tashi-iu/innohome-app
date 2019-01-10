@@ -59,7 +59,7 @@ class DatabaseHelper {
   void _onCreate(Database db, int version) async {
       await db.execute("""
             CREATE TABLE $tableUser(
-              $columnUserId INT PRIMARY KEY,
+              $columnUserId INTEGER PRIMARY KEY NOT NULL,
               $columnUserToken TEXT
             )""");
       
@@ -98,6 +98,12 @@ class DatabaseHelper {
     return res;
   }
 
+  Future<int> updateUser(User user) async {
+    var dbClient = await db;
+
+    dbClient.update(tableUser, user.toMap(), where: "$columnUserId = ?", whereArgs: [user.id]);
+  }
+
   Future<User> getUser(int id) async {
     var dbClient = await db;
 
@@ -105,6 +111,13 @@ class DatabaseHelper {
     if(result.length == 0) return null;
 
     return User.fromMap(result.first);
+  }
+
+  Future<List> getAllUser() async {
+    var dbClient = await db;
+
+    var result = await dbClient.rawQuery("SELECT * FROM $tableUser");
+    return result.toList();
   }
 
   //HOUSE ORM

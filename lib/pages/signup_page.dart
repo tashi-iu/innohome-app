@@ -35,24 +35,6 @@ class _SignUp extends State<SignUp> {
     super.initState();
   }
 
-  String _validateUsername(String value) {
-    if (value.isEmpty) {
-      return "User ID cannot be empty";
-    }
-    if (value.length < 5) {
-      return "Minimum length for user name is 5";
-    }
-
-    String p = "[A-Za-z0-9]";
-    RegExp regExp = new RegExp(p);
-
-    if (regExp.hasMatch(value)) {
-      return null;
-    }
-
-    return 'User name is not valid';
-  }
-
   String _validateEmail(String value) {
     if (value.isEmpty) {
       // The form is empty
@@ -132,7 +114,7 @@ class _SignUp extends State<SignUp> {
             padding: EdgeInsets.symmetric(horizontal: 18.0),
             color: Colors.white.withOpacity(0.8),
             child: Form(
-              autovalidate: true,
+              autovalidate: false,
               key: _signUpKey,
               child: _loginPage(),
             ),
@@ -188,20 +170,8 @@ class _SignUp extends State<SignUp> {
           obscureText: true,
         ),
         LoginInputTextField(
-          labelText: "New username",
-          hintText: "gyeltshenFamily",
-          prefixIcon: Icon(Icons.person),
-          keyboardType: TextInputType.emailAddress,
-          validator: _validateUsername,
-          controller: null,
-          onSaved: (value) {
-            this.username = value;
-          },
-          obscureText: false,
-        ),
-        LoginInputTextField(
           labelText: "Email address",
-          hintText: "dorji@druknet.bt",
+          hintText: "dorji@gmail.bt",
           prefixIcon: Icon(Icons.email),
           keyboardType: TextInputType.emailAddress,
           validator: _validateEmail,
@@ -251,23 +221,37 @@ class _SignUp extends State<SignUp> {
         if (_signUpKey.currentState.validate()) {
           _signUpKey.currentState.save();
           Map<String, String> response =
-              await signUp(email, username, deviceId, noOfRooms, password);
+              await signUp(email, deviceId, noOfRooms, password);
 
           String error_message = response["error_message"];
           String x_auth = response["x_auth"];
 
           if (error_message == "null" && x_auth == "null") {
+            
+            //pop up
             print("oops sth is very wrong");
           } else if (x_auth == "null") {
             print(error_message);
             print("hello from error");
+            //pop up
           } else if (error_message == "null") {
             print(response["x_auth"]);
             User user = User(response["x_auth"]);
             int result = await db.saveUser(user);
-            if (result > 0) {
-              print("user is saved");
+
+            User singleUser = await db.getUser(1);
+            print(singleUser);
+
+            if (result != 0) {
+              print("user saved");
+              List users = await db.getAllUser();
+              users.forEach((user) => print(user));
+
+            }else{
+              print("not good");
             }
+
+                    
           }
         }
       },

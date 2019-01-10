@@ -11,13 +11,12 @@ import '../config/config_api_endpoints.dart';
 //   return json.decode(response.body);
 // }
 
-Future<Map> signUp(String email, String username, String deviceId,
+Future<Map> signUp(String email, String deviceId,
     int noOfRooms, String password) async {
-  String sourceURL = signUpEndpoint;
+  String sourceURL = signUpEndPoint;
 
   Map<String, dynamic> body = {
     "email": email,
-    "username": username,
     "deviceId": deviceId,
     "noOfRooms": noOfRooms,
     "password": password
@@ -45,3 +44,36 @@ Future<Map> signUp(String email, String username, String deviceId,
 
   return obj;
 }
+
+Future<Map> login(String email String password) async {
+  String sourceURL = loginEndPoint;
+
+  Map<String, dynamic> body = {
+    "email": email,
+    "password": password
+  };
+
+  try {
+    http.Response response = await http.post(sourceURL,
+        headers: {'content-type': 'application/json'}, body: json.encode(body));
+    Map<String, dynamic> responseBody = json.decode(response.body);
+    Map<String, dynamic> responseHeaders = response.headers;
+
+    Map<String, String> obj = {
+      "x_auth": "${responseHeaders["x-auth"]}",
+      "error_message": "${responseBody["error_message"]}",
+    };
+    return obj;
+    
+  } catch (err) {
+    print("no network bahi");
+  }
+
+  Map<String, String> obj = {
+    "x_auth": "null",
+    "error_message": "null",
+  };
+
+  return obj;
+}
+
