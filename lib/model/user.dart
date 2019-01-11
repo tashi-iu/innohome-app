@@ -12,6 +12,7 @@ class User{
 
   String get userToken => _userToken;
   int get id => _userId;
+  
   set userToken(String token){
     this._userToken = token;
   }

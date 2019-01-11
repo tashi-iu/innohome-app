@@ -5,18 +5,17 @@ import '../util/database_helper.dart';
 
 import '../model/user.dart';
 
-import '../pages/house_page.dart';
 import '../widgets/login_btn.dart';
 import '../widgets/login_field.dart';
 
 import 'dart:ui';
 
-class SignUp extends StatefulWidget {
+class SignUpPage extends StatefulWidget {
   @override
-  _SignUp createState() => _SignUp();
+  _SignUpPage createState() => _SignUpPage();
 }
 
-class _SignUp extends State<SignUp> {
+class _SignUpPage extends State<SignUpPage> {
   final _signUpKey = GlobalKey<FormState>();
 
   String email;
@@ -220,6 +219,8 @@ class _SignUp extends State<SignUp> {
       onPressed: () async {
         if (_signUpKey.currentState.validate()) {
           _signUpKey.currentState.save();
+          
+          
           Map<String, String> response =
               await signUp(email, deviceId, noOfRooms, password);
 
@@ -244,8 +245,7 @@ class _SignUp extends State<SignUp> {
 
             if (result != 0) {
               print("user saved");
-              List users = await db.getAllUser();
-              users.forEach((user) => print(user));
+              Navigator.pushReplacementNamed(context, "/rooms");
 
             }else{
               print("not good");

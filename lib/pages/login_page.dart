@@ -104,37 +104,33 @@ class _LoginPageState extends State<LoginPage> {
               Colors.deepPurple[900]
             ],
           ),
-          onPressed: () async{
+          onPressed: () async {
             if (_signUpKey.currentState.validate()) {
+              _signUpKey.currentState.save();
               print("validation completed");
-
+              print("$email, $password");
               Map<String, String> response = await login(email, password);
 
-          String error_message = response["error_message"];
-          String x_auth = response["x_auth"];
+              String error_message = response["error_message"];
+              String x_auth = response["x_auth"];
 
-          if (error_message == "null" && x_auth == "null") {
-            
-            //pop up
-            print("oops sth is very wrong");
-          } else if (x_auth == "null") {
-            print(error_message);
-            print("hello from error");
-            //pop up
-          }else if(error_message == "null"){
+              if (error_message == "null" && x_auth == "null") {
+                //pop up
+                print("oops sth is very wrong");
+              } else if (x_auth == "null") {
+                print(error_message);
+                print("hello from error");
+                //pop up
+              } else if (error_message == "null") {
+                User user = User.fromMap({"userId": 1, "userToken": x_auth});
 
-              User user = User.fromMap({
-                "userId":1,
-                "userToken": x_auth 
-              });
+                int result = await db.updateUser(user);
 
-              int result = await db.updateUser(user);
-
-              if(result != 0){
-                print("update successful");
+                if (result != 0) {
+                  Navigator.pushReplacementNamed(context, "/rooms");
+                }
               }
             }
-          }
           },
         ),
         LoginInputTextField(
