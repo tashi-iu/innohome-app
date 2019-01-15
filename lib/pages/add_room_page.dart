@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:smart_switch_v2/pages/house_page.dart';
+import 'package:smart_switch_v2/util/light_utils.dart';
 
 import '../util/database_helper.dart';
 import '../model/room.dart';
@@ -18,8 +19,10 @@ class _AddRoomState extends State<AddRoom> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController _roomNameController;
+  TextEditingController _noOfLightController;
 
   int _houseId = 1;
+  int _noOfRooms;
   String _roomName = 'New Room';
   File _roomImage;
 
@@ -28,6 +31,7 @@ class _AddRoomState extends State<AddRoom> {
   @override
   void initState() {
     _roomNameController = TextEditingController();
+    _noOfLightController = TextEditingController();
     super.initState();
   }
 
@@ -39,6 +43,23 @@ class _AddRoomState extends State<AddRoom> {
     setState(() {
       _roomImage = image;
     });
+  }
+
+  Widget _buildNoOfRoomsTextField() {
+    return TextFormField(
+      controller: _noOfLightController,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        suffixIcon: Icon(Icons.room),
+        border: OutlineInputBorder(),
+        labelText: 'Number of lights',
+      ),
+      validator: (value) {
+        if (value.isEmpty) {
+          return "Make sure you enter the number of lights in your room";
+        }
+      },
+    );
   }
 
   @override
@@ -59,10 +80,26 @@ class _AddRoomState extends State<AddRoom> {
                 if (_formKey.currentState.validate() && _roomImage != null) {
                   setState(() {
                     _roomName = _roomNameController.text;
+                    _noOfRooms = num.parse(_noOfLightController.text);
                   });
 
-                  Room room = Room(_houseId, _roomName, _roomImage);
+                  Room room = Room(_houseId, _roomName, _roomImage, _noOfRooms);
                   int res = await db.saveRoom(room);
+                  List _rooms = await db.getAllRooms();
+
+                  // print("heyyyyyyy");
+                  // _rooms.forEach((room){
+                  //   print("rooming");
+                  //   print(room);
+                  //   print("...........");
+                  // }); 
+                  // print('this is the room i need bitch ');
+                  print("${_rooms.last['id']}");
+                  
+
+
+
+                  generatelightsAndSaveToDb(_rooms.last["id"]);
                   if (res != 0) {
                     Navigator.pushReplacementNamed(context, '/rooms');
                   }
@@ -97,18 +134,25 @@ class _AddRoomState extends State<AddRoom> {
                   },
                 ),
               ),
-              Padding(padding: EdgeInsets.all(32),),
+              _buildNoOfRoomsTextField(),
+              Padding(
+                padding: EdgeInsets.all(32),
+              ),
               Container(
                 child: _roomImage != null
                     ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[Container(
-                        color: Colors.black54,
-                      margin: EdgeInsets.all(62),
-                      padding: EdgeInsets.all(2),
-                      child: Image.file(_roomImage,),
-                    ),],
-                    )
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            color: Colors.black54,
+                            margin: EdgeInsets.all(62),
+                            padding: EdgeInsets.all(2),
+                            child: Image.file(
+                              _roomImage,
+                            ),
+                          ),
+                        ],
+                      )
                     : Container(
                         padding: EdgeInsets.symmetric(horizontal: 32),
                         child: InkWell(

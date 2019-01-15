@@ -16,7 +16,6 @@ void main() async{
   var db = DatabaseHelper();
 
   User user = await db.getUser(1);
-  print("user is $user");
 
   Map<String, dynamic> userObj;
   if(user != null){
@@ -28,12 +27,8 @@ void main() async{
     userObj = {
       "id": null,
       "token": null
-    };
-    
+    };   
   }
-
-  print("user object is $userObj");
-
   runApp(MyApp(userObj));
 }
 
@@ -43,6 +38,7 @@ class MyApp extends StatelessWidget {
   MyApp(this.user);
 
   final _roomModel = RoomModel();
+  
   @override
   Widget build(BuildContext context) {
     return ScopedModel<RoomModel>(

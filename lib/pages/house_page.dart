@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_switch_v2/model/light.dart';
 import 'package:smart_switch_v2/pages/settings.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -74,14 +75,26 @@ class _HousePageState extends State<HousePage> {
 
 
   Widget buildRoomCard(int index) {
+    
     return ScopedModelDescendant(
         builder: (BuildContext context, Widget child, RoomModel model) {
       Room room = model.getRoom(index);
+      //print(room.toMap());
+
       return Material(
           child: InkWell(
-            onTap: (){
+            onTap: () async{
+              print(room.toMap());
+              
+              List<Map<String, dynamic>> lights = await db.getAllLights(room.id);
+
+              // print("lights are");
+              // lights.forEach((light){
+              //   print(light);
+              // });
+
               Navigator.push(context, MaterialPageRoute(
-                builder: (BuildContext context) => RoomPage()
+                builder: (BuildContext context) => RoomPage(room.id, room.roomName, lights)
               ));
             },
               child: Container(
@@ -141,7 +154,6 @@ class _HousePageState extends State<HousePage> {
               children: List.generate(
                   widget.model.length != null ? widget.model.length : 0,
                   (index) {
-                print(widget.model.length);
                 return buildRoomCard(index);
               }));
         }),

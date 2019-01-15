@@ -5,13 +5,15 @@ import 'dart:typed_data';
 class Room {
   int _id;
   int _houseId = 1;
+  int _noOfLights;
   String _roomName;
   Uint8List _roomImage;
 
-  Room(int houseId, String roomName, File roomImage) {
+  Room(int houseId, String roomName, File roomImage, int noOfLights) {
     this._houseId = houseId;
     this._roomName = roomName;
     this._roomImage = roomImage.readAsBytesSync();
+    this._noOfLights = noOfLights;
   }
 
   Room.map(dynamic obj) {
@@ -19,14 +21,16 @@ class Room {
     this._roomName = obj['roomName'];
     this._roomImage = base64.decode(obj['roomImage']);
     this._houseId = obj['houseId'];
+    this._noOfLights = obj['noOfLights'];
   }
 
   int get id => _id;
   int get houseId => _houseId;
+  int get noOfLights => _noOfLights;
   String get roomName => _roomName;
   Uint8List get roomImage => _roomImage;
 
-  set HouseId(int houseId) {
+  set houseId(int houseId) {
     this._houseId = houseId;
   }
 
@@ -38,6 +42,10 @@ class Room {
     this._roomImage = image;
   }
 
+  set noOfLights(int noOfLights){
+    this._noOfLights = noOfLights;
+  }
+
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
     if (_id != null) {
@@ -45,6 +53,7 @@ class Room {
     }
     map['houseId'] = _houseId;
     map['roomName'] = _roomName;
+    map['noOfLights'] = _noOfLights;
     map['roomImage'] = base64.encode(_roomImage);
     return map;
   }
@@ -53,6 +62,7 @@ class Room {
     this._id = map['id'];
     this._houseId = map['houseId'];
     this._roomName = map['roomName'];
-    this._roomImage = base64.decode(map['roomName']);
+    this._noOfLights = map['noOfLights'];
+    this._roomImage = base64.decode(map['roomImage']);
   }
 }

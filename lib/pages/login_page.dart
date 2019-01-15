@@ -9,6 +9,7 @@ import 'dart:ui';
 import '../model/user.dart';
 
 import '../util/network_util.dart';
+import '../widgets/error_popup.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -50,6 +51,8 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
+  bool _awaitLogIn = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
       reverse: true,
       children: <Widget>[
         LoginButton(
-          child: Text(
+          child: _awaitLogIn ? CircularProgressIndicator() : Text(
             "LOG IN",
             style: TextStyle(
               color: Colors.white,
@@ -104,23 +107,38 @@ class _LoginPageState extends State<LoginPage> {
               Colors.deepPurple[900]
             ],
           ),
-          onPressed: () async {
+          onPressed: _awaitLogIn ? (){return null;} : () async {
             if (_signUpKey.currentState.validate()) {
               _signUpKey.currentState.save();
               print("validation completed");
               print("$email, $password");
+              setState(() {
+                _awaitLogIn = true;
+              });
               Map<String, String> response = await login(email, password);
+              setState(() {
+                _awaitLogIn = false;
+              });
 
               String error_message = response["error_message"];
               String x_auth = response["x_auth"];
 
               if (error_message == "null" && x_auth == "null") {
-                //pop up
-                print("oops sth is very wrong");
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ErrorPopup(
+                        text: error_message,
+                      );
+                    });
               } else if (x_auth == "null") {
-                print(error_message);
-                print("hello from error");
-                //pop up
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ErrorPopup(
+                        text: error_message,
+                      );
+                    });
               } else if (error_message == "null") {
                 User user = User.fromMap({"userId": 1, "userToken": x_auth});
 
