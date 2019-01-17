@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_switch_v2/widgets/error_popup.dart';
 
 import '../util/network_util.dart';
 import '../util/database_helper.dart';
@@ -229,16 +230,29 @@ class _SignUpPage extends State<SignUpPage> {
 
           if (error_message == "null" && x_auth == "null") {
             
-            //pop up
+            showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ErrorPopup(
+                        text: "Signup failed. Check your internet connection and try again.",
+                      );
+                    });
             print("oops sth is very wrong");
           } else if (x_auth == "null") {
             print(error_message);
             print("hello from error");
-            //pop up
+            showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ErrorPopup(
+                        text: "Signup failed. Email is already registered.",
+                      );
+                    });
           } else if (error_message == "null") {
             print(response["x_auth"]);
-            User user = User(response["x_auth"]);
+            User user = User(response["x_auth"], deviceId);
             int result = await db.saveUser(user);
+            
 
             User singleUser = await db.getUser(1);
             print(singleUser);
@@ -249,9 +263,7 @@ class _SignUpPage extends State<SignUpPage> {
 
             }else{
               print("not good");
-            }
-
-                    
+            }       
           }
         }
       },

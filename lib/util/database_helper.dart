@@ -19,6 +19,7 @@ class DatabaseHelper {
   final String tableUser = "userTable";
   final String columnUserId = "id";
   final String columnUserToken = "userToken";
+  final String columnDeviceId = "deviceId";
 
   final String tableHouse = "houseTable";
   final String columnHouseId = "id";
@@ -59,11 +60,12 @@ class DatabaseHelper {
     return smartSwitchDb;
   }
 
-  void _onCreate(Database db, int version) async {
+  void _onCreate(Database db, int vesion) async {
       await db.execute("""
             CREATE TABLE $tableUser(
               $columnUserId INTEGER PRIMARY KEY NOT NULL,
-              $columnUserToken TEXT
+              $columnUserToken TEXT,
+              $columnDeviceId TEXT NOT NULL
             )""");
       
       await db.execute("""

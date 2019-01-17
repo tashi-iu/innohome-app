@@ -5,10 +5,16 @@ import '../util/database_helper.dart';
 
 import '../model/light.dart';
 
+import '../util/mqtt_util.dart';
+
 class RoomModel extends Model {
   var db = DatabaseHelper();
-
+  bool local = true;
+  int noOfLights = 0;
+  
   List<Room> _rooms = [];
+
+  MqttUtil mqtt = MqttUtil();
 
   getRooms() async {
     List roomsSQL = await db.getAllRooms();
@@ -23,7 +29,6 @@ class RoomModel extends Model {
   }
 
   get length => _rooms.length;
-
   //room needs to be database query;
   void addRoom(var roomSQL) {
     Room room = Room.map(roomSQL);
@@ -34,4 +39,5 @@ class RoomModel extends Model {
   Room getRoom(int index) {
     return _rooms[index];
   }
+
 }

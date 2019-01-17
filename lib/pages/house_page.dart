@@ -6,7 +6,6 @@ import 'package:scoped_model/scoped_model.dart';
 import './room_page.dart';
 
 import '../util/database_helper.dart';
-
 import '../scoped_model/scoped_room.dart';
 
 import '../model/room.dart';
@@ -21,6 +20,8 @@ class HousePage extends StatefulWidget {
 
 class _HousePageState extends State<HousePage> {
   var db = DatabaseHelper();
+
+  bool _local = true;
 
   @override
   void initState() {
@@ -40,10 +41,12 @@ class _HousePageState extends State<HousePage> {
       ),
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.settings),
+          icon: Icon(
+              widget.model.local ? Icons.home : Icons.settings_input_antenna),
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Settings()));
+            setState(() {
+              widget.model.local = !widget.model.local;
+            });
           },
         )
       ],
@@ -58,79 +61,85 @@ class _HousePageState extends State<HousePage> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: ListView(
-              children: <Widget>[
-                Text("innoHome"),
-              ],
-            ),
+            child: Text("InnoHome"),
           ),
-          Container(
-            child: Text(
-                "This is innoHome, we are the leading provider of smart switch in Bhutan."),
-          )
+          ListTile(
+            title: Text("Settings"),
+            leading: Icon(Icons.settings),
+            onTap: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Settings()));
+            },
+          ),
+          // Container(
+          //   child: Text(
+          //       "This is innoHome, we are the leading provider of smart switch in Bhutan."),
+          // )
         ],
       ),
     );
   }
 
-
   Widget buildRoomCard(int index) {
-    
     return ScopedModelDescendant(
         builder: (BuildContext context, Widget child, RoomModel model) {
       Room room = model.getRoom(index);
       //print(room.toMap());
 
       return Material(
-          child: InkWell(
-            onTap: () async{
-              print(room.toMap());
-              
-              List<Map<String, dynamic>> lights = await db.getAllLights(room.id);
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () async {
+            //print(room.toMap());
 
-              // print("lights are");
-              // lights.forEach((light){
-              //   print(light);
-              // });
+            List<Map<String, dynamic>> lights = await db.getAllLights(room.id);
 
-              Navigator.push(context, MaterialPageRoute(
-                builder: (BuildContext context) => RoomPage(room.id, room.roomName, lights)
-              ));
-            },
-              child: Container(
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 1.0,
-                          offset: Offset(1, 1),
-                        )
-                      ],
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      image: DecorationImage(
-                        image: MemoryImage(room.roomImage),
-                        fit: BoxFit.cover,
-                      )),
-                  child: Container(
-                    padding: EdgeInsets.all(18.0),
-                    decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    child: Center(
-                      child: Text(
-                        room.roomName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white.withAlpha(230),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18.0,
-                        ),
-                      ),
-                    ),
-                  ) //Image.memory(room.roomImage),
+            // print("lights are");
+            // lights.forEach((light){
+            //   print(light);
+            // });
 
-                  )));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        RoomPage(room.id, room.roomName, lights)));
+          },
+          child: Container(
+            margin: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 1.0,
+                    offset: Offset(1, 1),
+                  )
+                ],
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                image: DecorationImage(
+                  image: MemoryImage(room.roomImage),
+                  fit: BoxFit.cover,
+                )),
+            child: Container(
+              padding: EdgeInsets.all(18.0),
+              decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.4),
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
+              child: Center(
+                child: Text(
+                  room.roomName,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withAlpha(230),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18.0,
+                  ),
+                ),
+              ),
+            ), //Image.memory(room.roomImage),
+          ),
+        ),
+      );
     });
   }
 

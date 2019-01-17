@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../util/database_helper.dart';
-
+import '../util/mqtt_util.dart';
 import '../widgets/light_switch_icon.dart';
 
-import '../model/light.dart';
+import '../scoped_model/scoped_room.dart';
 
 class RoomPage extends StatefulWidget {
   final int roomId;
@@ -19,27 +20,53 @@ class RoomPage extends StatefulWidget {
 class _RoomPageState extends State<RoomPage> {
   var db = DatabaseHelper();
 
-  Widget _buildLightSwitches(){
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-      itemCount: widget.lights.length,
-      itemBuilder: (context, index){
-        print(index);
-        String label = widget.lights[index]["name"];
-        int id = widget.lights[index]["id"];
+  Widget _buildLightSwitches(int roomId) {
+    
+    return ScopedModelDescendant<RoomModel>(
+      builder: (context, child, model){
+        return GridView.builder(
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        itemCount: widget.lights.length,
+        itemBuilder: (context, index) {
+          //print(index);
+          
+          String label = widget.lights[index]["name"];
+          int id = index + 1;
+          return LightSwitchIcon(
+            label: label,
+            id: id,
+            roomId: roomId,
+          );
+        });
 
-        return LightSwitchIcon(label: label, id: id);
-         
-        } );
+      },
+    );
+    
+    
+    
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.roomName),
-      ),
-      body: _buildLightSwitches(),
+    return ScopedModelDescendant<RoomModel>(
+      builder: (context, child, model) {
+        return Scaffold(
+          appBar: AppBar(
+            iconTheme: IconThemeData(color: Colors.white),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () {
+                  model.mqtt.checkMqttConnectionLocal();
+                },
+              )
+            ],
+            title: Text(widget.roomName, style: TextStyle(color: Colors.white)),
+          ),
+          body: _buildLightSwitches(widget.roomId),
+        );
+      },
     );
   }
 }

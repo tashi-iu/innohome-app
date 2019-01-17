@@ -14,10 +14,8 @@ void generatelightsAndSaveToDb(int roomId) async {
     for (int i = 0; i < room.noOfLights; i++) {
       Light light = Light(roomId, "Light ${i+ 1}", false);
       int res = await db.saveLight(light);
-      if (res != 0) {
-        print("lights saved");
-      } else {
-        print("not saved in db");
-      }
+      if (res == 0) {
+        print("error error...");
+      } 
     }
   }

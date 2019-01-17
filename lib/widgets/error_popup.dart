@@ -14,14 +14,16 @@ class ErrorPopup extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
         ),
-        height: 200,
+        height: 100,
         padding: EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Icon(Icons.error_outline, color: Colors.red, size: 48.0,),
             Padding(
               padding: EdgeInsets.only(top: 8.0),
               child: Text(text,
+              textAlign: TextAlign.center,
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16.0,

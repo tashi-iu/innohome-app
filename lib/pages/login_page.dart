@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                     context: context,
                     builder: (context) {
                       return ErrorPopup(
-                        text: error_message,
+                        text: "Could not connect to server. Check your connection and try again",
                       );
                     });
               } else if (x_auth == "null") {
@@ -136,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                     context: context,
                     builder: (context) {
                       return ErrorPopup(
-                        text: error_message,
+                        text: "Login failed. Make sure you are registered and recheck the fields.",
                       );
                     });
               } else if (error_message == "null") {
@@ -162,6 +162,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         LoginInputTextField(
           labelText: "Email",
+          keyboardType: TextInputType.emailAddress,
           hintText: "dorji72@gmail.com",
           obscureText: false,
           validator: _validateEmail,
