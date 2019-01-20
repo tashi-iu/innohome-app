@@ -22,7 +22,7 @@ class LoginButton extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 16),
       width: width,
       height: 50.0,
-      decoration: BoxDecoration(gradient: gradient, borderRadius: BorderRadius.circular(28), boxShadow: [
+      decoration: BoxDecoration(gradient: gradient, borderRadius: BorderRadius.circular(8), boxShadow: [
         BoxShadow(
           color: Colors.grey[500].withOpacity(0.3),
           offset: Offset(0.0, 1.5),

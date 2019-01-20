@@ -41,6 +41,8 @@ class MyApp extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+
+
     return ScopedModel<RoomModel>(
         model: _roomModel,
         child: MaterialApp(
@@ -49,7 +51,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.cyan,
           ),
-          home:  this.user["token"] != null? HousePage(model: _roomModel,): LandingPage(),
+          home:  this.user["token"] != null? HousePage(model: _roomModel): LandingPage(),
           routes: {
             '/rooms': (BuildContext context) => HousePage(model: _roomModel),
             '/signup': (BuildContext context) => SignUpPage(),

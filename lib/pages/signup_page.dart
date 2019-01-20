@@ -252,10 +252,6 @@ class _SignUpPage extends State<SignUpPage> {
             print(response["x_auth"]);
             User user = User(response["x_auth"], deviceId);
             int result = await db.saveUser(user);
-            
-
-            User singleUser = await db.getUser(1);
-            print(singleUser);
 
             if (result != 0) {
               print("user saved");

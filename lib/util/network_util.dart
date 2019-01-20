@@ -4,12 +4,15 @@ import 'dart:convert';
 
 import '../config/config_api_endpoints.dart';
 
-// Future<Map> postData(String room, String switchName, String toggle) async {
-//   String sourceURL = "http://192.168.128.88:3000/smart-switch/send-data-demo";
+Future<Map> postData(String room, String switchName, String toggle, String xAuth) async {
+  String sourceURL = "http://192.168.0.111:3000/smart-switch/mainhub";
 
-//   http.Response response = await http.post(sourceURL, body: json.encode({"room":"$room", "switchName":"$switchName", "toggle":"$toggle"}), headers: {"Content-type": "application/json", "Accept": "application/json"});
-//   return json.decode(response.body);
-// }
+  Map<String, String> data = {"room":"$room", "switchName":"$switchName", "status":"$toggle"};
+
+  http.Response response = await http.post(sourceURL, body: json.encode(data), headers: {"Content-type": "application/json", "Accept": "application/json", "x-auth": xAuth});
+  print(data);
+  return data;
+}
 
 Future<Map> signUp(String email, String deviceId,
     int noOfRooms, String password) async {

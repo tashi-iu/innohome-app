@@ -64,8 +64,7 @@ class _LandingPageState extends State<LandingPage> {
                 ],
               ),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/login');
-
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(),),);
               },
             ),
             padding: EdgeInsets.fromLTRB(64, 16, 64, 0),
@@ -95,7 +94,7 @@ class _LandingPageState extends State<LandingPage> {
                 ],
               ),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/signup');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage(),),);
               },
             ),
             padding: EdgeInsets.fromLTRB(64, 0, 64, 0),

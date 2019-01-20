@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_switch_v2/model/light.dart';
 import 'package:smart_switch_v2/pages/settings.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -20,8 +19,7 @@ class HousePage extends StatefulWidget {
 
 class _HousePageState extends State<HousePage> {
   var db = DatabaseHelper();
-
-  bool _local = true;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -33,10 +31,21 @@ class _HousePageState extends State<HousePage> {
     return AppBar(
       iconTheme: IconThemeData(color: Colors.white),
       centerTitle: true,
-      title: Text(
-        "Rooms",
-        style: TextStyle(
-          color: Colors.white,
+      title: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 4),
+            ),
+            Text(
+              "Rooms",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+          ],
         ),
       ),
       actions: <Widget>[
@@ -47,6 +56,9 @@ class _HousePageState extends State<HousePage> {
             setState(() {
               widget.model.local = !widget.model.local;
             });
+            widget.model.local
+                ? showInSnackBar("Switched to local network")
+                : showInSnackBar("Switched to internet network");
           },
         )
       ],
@@ -105,9 +117,11 @@ class _HousePageState extends State<HousePage> {
                     builder: (BuildContext context) =>
                         RoomPage(room.id, room.roomName, lights)));
           },
-          child: Container(
-            margin: EdgeInsets.all(8),
-            decoration: BoxDecoration(
+          child: Hero(
+            tag: room.id,
+            child: Container(
+              margin: EdgeInsets.all(8),
+              decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -119,24 +133,31 @@ class _HousePageState extends State<HousePage> {
                 image: DecorationImage(
                   image: MemoryImage(room.roomImage),
                   fit: BoxFit.cover,
-                )),
-            child: Container(
-              padding: EdgeInsets.all(18.0),
-              decoration: BoxDecoration(
+                ),
+              ),
+              child: Container(
+                padding: EdgeInsets.all(18.0),
+                decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.4),
-                  borderRadius: BorderRadius.all(Radius.circular(8))),
-              child: Center(
-                child: Text(
-                  room.roomName,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white.withAlpha(230),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18.0,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(8),
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    child: Text(
+                      room.roomName,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white.withAlpha(230),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18.0,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ), //Image.memory(room.roomImage),
+            ),
           ),
         ),
       );
@@ -146,26 +167,67 @@ class _HousePageState extends State<HousePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       drawer: _buildDrawer(),
       appBar: _buildAppBar(),
+      bottomNavigationBar: ScopedModelDescendant<RoomModel>(
+          builder: (context, child, model) {
+            if(model.local){
+            return InkWell(
+              child: Container(
+              height: 48,
+              color: model.mqttState ? Colors.cyan : Colors.red,
+              child: Center(
+                child: Text(
+                model.mqttState ? "Connection Established"
+                    : "You are not connected. Tap here to connect",
+                style: TextStyle(
+                    fontSize: 14, color: Colors.white.withOpacity(0.85)),
+              ),
+              )
+            ),
+            onTap: (){
+              if(model.mqtt.client.connectionStatus.state.toString() == "MqttConnectionState.connected"){
+                model.mqttState = true;
+              }else{
+                model.mqtt.checkMqttConnectionLocal();
+                model.mqttState =false;
+              }              
+            },
+            );}
+          return Text("");    
+          },
+      ),
+
       body: Container(
         decoration: BoxDecoration(
-            image: DecorationImage(
-                fit: BoxFit.cover,
-                image: AssetImage(
-                  "assets/bg.jpg",
-                ))),
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage(
+              "assets/bg.jpg",
+            ),
+          ),
+        ),
         child: ScopedModelDescendant(
             builder: (BuildContext context, Widget child, RoomModel model) {
           return GridView.count(
-              padding: EdgeInsets.fromLTRB(4, 8, 4, 4),
-              crossAxisCount: 2,
-              children: List.generate(
-                  widget.model.length != null ? widget.model.length : 0,
-                  (index) {
-                return buildRoomCard(index);
-              }));
+            padding: EdgeInsets.fromLTRB(4, 8, 4, 4),
+            crossAxisCount: 2,
+            children: List.generate(
+                widget.model.length != null ? widget.model.length : 0, (index) {
+              return buildRoomCard(index);
+            }),
+          );
         }),
+      ),
+    );
+  }
+
+  void showInSnackBar(String value) {
+    _scaffoldKey.currentState.removeCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(value),
       ),
     );
   }

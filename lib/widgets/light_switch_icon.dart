@@ -6,6 +6,10 @@ import 'package:scoped_model/scoped_model.dart';
 import '../scoped_model/scoped_room.dart';
 
 import '../util/mqtt_util.dart';
+import '../util/network_util.dart';
+
+import '../model/user.dart';
+import '../util/database_helper.dart';
 
 class LightSwitchIcon extends StatefulWidget {
   final String label;
@@ -22,18 +26,28 @@ class LightSwitchIcon extends StatefulWidget {
 
 class _LightSwitchState extends State<LightSwitchIcon> {
   bool _toggle = false;
+  
   @override
   Widget build(BuildContext context) {
+    
     return ScopedModelDescendant<RoomModel>(builder: (context, child, model) {
       return InkWell(
         borderRadius: BorderRadius.circular(16),
         splashColor: Colors.cyan.withOpacity(0.1),
         // highlightColor: Colors.transparent,
-        onTap: () {
+        onTap: () async {
           setState(() {
             _toggle = !_toggle;
           });
-          model.mqtt.postData("r${widget.roomId}", "D${widget.id}", _toggle ? "ON" : "OFF");
+          if (model.local) {
+            model.mqtt.postData(
+                "r${widget.roomId}", "D${widget.id}", _toggle ? "ON" : "OFF");
+          } else {
+            var db = DatabaseHelper();
+            User user = await db.getUser(1);
+          postData(
+                 "r${widget.roomId}", "D${widget.id}", _toggle ? "ON" : "OFF", user.userToken);
+          }
         },
         child: Container(
           height: 80,

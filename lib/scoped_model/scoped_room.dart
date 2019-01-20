@@ -11,10 +11,12 @@ class RoomModel extends Model {
   var db = DatabaseHelper();
   bool local = true;
   int noOfLights = 0;
+  String xAuth = " ";
   
   List<Room> _rooms = [];
-
+  
   MqttUtil mqtt = MqttUtil();
+  bool mqttState = false;
 
   getRooms() async {
     List roomsSQL = await db.getAllRooms();

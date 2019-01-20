@@ -3,7 +3,6 @@ import 'dart:async';
 
 class MqttUtil {
   String lbroker = '192.168.4.1';
-  String gbroker = '';
   // int port = 1883;
 
   mqtt.MqttClient client;
@@ -15,42 +14,6 @@ class MqttUtil {
 
   void lconnect() async {
     client = mqtt.MqttClient(lbroker, '');
-    // client.port = port;
-
-    client.logging(on: false);
-
-    client.keepAlivePeriod = 30;
-
-    client.onDisconnected = _onDisconnected;
-
-    final mqtt.MqttConnectMessage connMess = mqtt.MqttConnectMessage()
-        .withClientIdentifier('fromFlutter')
-        .startClean()
-        .keepAliveFor(30);
-    print('MQTT client connecting');
-    client.connectionMessage = connMess;
-
-    try {
-      await client.connect();
-    } catch (e) {
-      print(e);
-      // _disconnect();
-    }
-
-    if (client?.connectionStatus?.state == mqtt.MqttConnectionState.connected) {
-      print('MQTT client connected');
-    } else {
-      print('ERROR: MQTT client connection failed - '
-          'reconnecting, state is ${client.connectionStatus.state}');
-      _disconnect();
-    }
-
-    subscription = client.updates.listen(_onMessage);
-
-  }
-
-  void gconnect() async {
-    client = mqtt.MqttClient(gbroker, '');
     // client.port = port;
 
     client.logging(on: false);
@@ -112,21 +75,6 @@ class MqttUtil {
       return true;
     } else {
       print('ERROR: Local MQTT client connection failed - '
-          'Retrying, state is ${client.connectionStatus.state}');
-    }
-    return false;
-  }
-
-  bool checkMqttConnectionGlobal() {
-    gconnect();
-
-    if (client?.connectionStatus?.state == mqtt.MqttConnectionState.connected) {
-      print('Global MQTT client connected');
-      subscribeToTopic(topic);
-      print('Subscribed to Topic : $topic');
-      return true;
-    } else {
-      print('ERROR: Global MQTT client connection failed - '
           'Retrying, state is ${client.connectionStatus.state}');
     }
     return false;

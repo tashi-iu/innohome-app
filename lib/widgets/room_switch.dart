@@ -26,7 +26,7 @@ class _RoomSwitchState extends State<RoomSwitch> {
               widget.toggle = value;
               //postData(widget.roomName, widget.title, widget.toggle.toString());
             });
-          },
+          },          //         model.mqtt.checkMqttConnectionLocal();
         ),
       ],
     );

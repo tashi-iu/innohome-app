@@ -46,19 +46,21 @@ class _AddRoomState extends State<AddRoom> {
   }
 
   Widget _buildNoOfRoomsTextField() {
-    return TextFormField(
-      controller: _noOfLightController,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        suffixIcon: Icon(Icons.room),
-        border: OutlineInputBorder(),
-        labelText: 'Number of lights',
+    return Padding(
+      padding: EdgeInsets.all(8),
+      child: TextFormField(
+        controller: _noOfLightController,
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Number of lights',
+        ),
+        validator: (value) {
+          if (value.isEmpty) {
+            return "Make sure you entered the number of lights in your room";
+          }
+        },
       ),
-      validator: (value) {
-        if (value.isEmpty) {
-          return "Make sure you enter the number of lights in your room";
-        }
-      },
     );
   }
 
@@ -92,12 +94,9 @@ class _AddRoomState extends State<AddRoom> {
                   //   print("rooming");
                   //   print(room);
                   //   print("...........");
-                  // }); 
+                  // });
                   // print('this is the room i need bitch ');
                   print("${_rooms.last['id']}");
-                  
-
-
 
                   generatelightsAndSaveToDb(_rooms.last["id"]);
                   if (res != 0) {

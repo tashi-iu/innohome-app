@@ -140,9 +140,8 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     });
               } else if (error_message == "null") {
-                User user = User.fromMap({"userId": 1, "userToken": x_auth});
-
-                int result = await db.updateUser(user);
+                User user = User(response["x_auth"], "qwertyuiop");
+                int result = await db.saveUser(user);
 
                 if (result != 0) {
                   Navigator.pushReplacementNamed(context, "/rooms");
