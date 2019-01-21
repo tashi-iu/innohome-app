@@ -55,6 +55,7 @@ class _HousePageState extends State<HousePage> {
           onPressed: () {
             setState(() {
               widget.model.local = !widget.model.local;
+              widget.model.mqttState = false;
             });
             widget.model.local
                 ? showInSnackBar("Switched to local network")
@@ -186,13 +187,16 @@ class _HousePageState extends State<HousePage> {
               ),
               )
             ),
-            onTap: (){
-              if(model.mqtt.client.connectionStatus.state.toString() == "MqttConnectionState.connected"){
-                model.mqttState = true;
-              }else{
-                model.mqtt.checkMqttConnectionLocal();
-                model.mqttState =false;
-              }              
+            onTap: () {
+
+              model.mqtt.checkMqttConnectionLocal();
+              Future.delayed(Duration(seconds: 2));
+              // if(model.mqtt.client.connectionStatus.state.toString() == "MqttConnectionState.connected"){
+              //   setState((){model.mqttState = true;});
+              // }else{
+              //   setState((){model.mqttState = false;});
+              // }  
+                setState((){model.mqttState = !model.mqttState;});
             },
             );}
           return Text("");    

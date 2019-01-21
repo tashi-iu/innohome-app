@@ -12,7 +12,7 @@ void generatelightsAndSaveToDb(int roomId) async {
     //int noOfLights = room.noOfLights;
     //print(noOfLights);
     for (int i = 0; i < room.noOfLights; i++) {
-      Light light = Light(roomId, "Light ${i+ 1}", false);
+      Light light = Light(roomId, "Light ${i+ 1}", "false");
       int res = await db.saveLight(light);
       if (res == 0) {
         print("error error...");

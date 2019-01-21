@@ -218,14 +218,14 @@ class DatabaseHelper {
     return result.toList();
   }
   //getting a light from id
-  Future<Room> getLight(int id) async {
+  Future<Light> getLight(int id) async {
     var dbClient = await db;
 
     List<Map> result = await dbClient.rawQuery("SELECT * FROM $tableLight WHERE $columnLightId=$id");
 
     if(result.length == 0) return null;
 
-    return Room.fromMap(result.first);
+    return Light.fromMap(result.first);
   }
 
   //updating a light

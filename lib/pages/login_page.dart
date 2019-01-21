@@ -177,6 +177,7 @@ class _LoginPageState extends State<LoginPage> {
             textAlign: TextAlign.center,
           ),
         ),
+        Padding(padding: EdgeInsets.only(bottom: 24),child: Container(child: Image.asset("assets/logo.jpg", fit: BoxFit.cover,),width: 150, height: 150,color: Colors.transparent,),)
       ],
     );
   }

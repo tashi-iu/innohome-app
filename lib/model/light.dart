@@ -3,9 +3,9 @@ class Light {
   int _id;
   int _roomId;
   String _name;
-  bool _status;
+  String _status;
 
-  Light(int roomId, String name, bool status) {
+  Light(int roomId, String name, String status) {
     this._roomId = roomId;
     this._name = name;
     this._status = status;
@@ -21,7 +21,7 @@ class Light {
   int get id => _id;
   int get roomId => _roomId;
   String get name => _name;
-  bool get status => _status;
+  String get status => _status;
 
   set roomId(int roomId) {
     this._roomId = roomId;
@@ -31,7 +31,7 @@ class Light {
     this._name = name;
   }
 
-  set status(bool status) {
+  set status(String status) {
     this._status= status;
   }
 
@@ -40,7 +40,7 @@ class Light {
     if (_id != null) {
       map['id'] = _id;
     }
-    map['roomid'] = _roomId;
+    map['roomId'] = _roomId;
     map['name'] = _name;
     map['status'] = _status;
     return map;

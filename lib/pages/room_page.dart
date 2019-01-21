@@ -27,13 +27,11 @@ class _RoomPageState extends State<RoomPage> {
                 SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
             itemCount: widget.lights.length,
             itemBuilder: (context, index) {
-              //print(index);
 
               String label = widget.lights[index]["name"];
-              int id = index + 1;
               return LightSwitchIcon(
                 label: label,
-                id: id,
+                index: index,
                 roomId: roomId,
               );
             });
@@ -87,21 +85,21 @@ class _RoomPageState extends State<RoomPage> {
                     background: Hero(
                       tag: widget.roomId,
                       child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: MemoryImage(
-                                model.getRoom(widget.roomId - 1).roomImage),
-                            fit: BoxFit.cover),
-                      ),
-                      child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.4),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(8),
+                          image: DecorationImage(
+                              image: MemoryImage(
+                                  model.getRoom(widget.roomId - 1).roomImage),
+                              fit: BoxFit.cover),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.4),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8),
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     ),
                   ),
                 ),
