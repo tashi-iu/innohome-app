@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_switch_v2/pages/landing_page.dart';
 import 'package:smart_switch_v2/pages/settings.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -82,6 +83,14 @@ class _HousePageState extends State<HousePage> {
             onTap: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => Settings()));
+            },
+          ),
+          ListTile(
+            title: Text("Log Out"),
+            leading: Icon(Icons.phonelink_off),
+            onTap: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => LandingPage()));
             },
           ),
           // Container(
@@ -199,7 +208,9 @@ class _HousePageState extends State<HousePage> {
                 setState((){model.mqttState = !model.mqttState;});
             },
             );}
-          return Text("");    
+          return Visibility(
+            visible: false,
+            child: Container(height: 1,),);    
           },
       ),
 
