@@ -65,17 +65,15 @@ class MqttUtil {
     print(client?.connectionStatus?.state);
   }
 
-  bool checkMqttConnectionLocal() {
+  checkMqttConnectionLocal() {
     lconnect();
-
     if (client?.connectionStatus?.state == mqtt.MqttConnectionState.connected) {
       print('Local MQTT client connected');
       subscribeToTopic(topic);
       print('Subscribed to Topic : $topic');
       return true;
     } else {
-      print('ERROR: Local MQTT client connection failed - '
-          'Retrying, state is ${client.connectionStatus.state}');
+      print('Not connected to local broker...');
     }
     return false;
   }

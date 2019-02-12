@@ -17,6 +17,7 @@ class RoomModel extends Model {
   
   MqttUtil mqtt = MqttUtil();
   bool mqttState = false;
+  bool mqttStateChecking = false;
 
   getRooms() async {
     List roomsSQL = await db.getAllRooms();

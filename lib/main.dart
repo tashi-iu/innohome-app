@@ -11,52 +11,46 @@ import './scoped_model/scoped_room.dart';
 
 import './model/user.dart';
 
-void main() async{
+void main() async {
   print("this is main");
   var db = DatabaseHelper();
 
   User user = await db.getUser(1);
 
   Map<String, dynamic> userObj;
-  if(user != null){
-    userObj = {
-      "id": user.id,
-      "token": user.userToken
-    };
-  }else{
-    userObj = {
-      "id": null,
-      "token": null
-    };   
+  if (user != null) {
+    userObj = {"id": user.id, "token": user.userToken};
+  } else {
+    userObj = {"id": null, "token": null};
   }
   runApp(MyApp(userObj));
 }
 
 class MyApp extends StatelessWidget {
-
-  Map<String, dynamic> user;
+  final Map<String, dynamic> user;
   MyApp(this.user);
 
   final _roomModel = RoomModel();
-  
+
   @override
   Widget build(BuildContext context) {
-
-
     return ScopedModel<RoomModel>(
-        model: _roomModel,
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'innoHome',
-          theme: ThemeData(
-            primarySwatch: Colors.cyan,
-          ),
-          home:  this.user["token"] != null? HousePage(model: _roomModel): LandingPage(),
-          routes: {
-            '/rooms': (BuildContext context) => HousePage(model: _roomModel),
-            '/signup': (BuildContext context) => SignUpPage(),
-            '/login': (BuildContext context) => LoginPage()         
-          },
-        ));
+      model: _roomModel,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'innoHome',
+        theme: ThemeData(
+          primarySwatch: Colors.cyan,
+        ),
+        home: this.user["token"] != null
+            ? HousePage(model: _roomModel)
+            : LandingPage(),
+        routes: {
+          '/rooms': (BuildContext context) => HousePage(model: _roomModel),
+          '/signup': (BuildContext context) => SignUpPage(),
+          '/login': (BuildContext context) => LoginPage()
+        },
+      ),
+    );
   }
 }

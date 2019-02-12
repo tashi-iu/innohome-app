@@ -27,7 +27,6 @@ class _RoomPageState extends State<RoomPage> {
                 SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
             itemCount: widget.lights.length,
             itemBuilder: (context, index) {
-
               String label = widget.lights[index]["name"];
               return LightSwitchIcon(
                 label: label,
@@ -64,6 +63,16 @@ class _RoomPageState extends State<RoomPage> {
           //     ),
           //   ),
           // ),
+          floatingActionButton: FloatingActionButton.extended(
+            label: Text(
+              "Add Light",
+              style: TextStyle(color: Colors.white),
+            ),
+            icon: Icon(Icons.add, color: Colors.white),
+            onPressed: () {
+              
+            },
+          ),
           body: NestedScrollView(
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {

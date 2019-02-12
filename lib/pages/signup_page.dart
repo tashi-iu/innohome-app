@@ -1,15 +1,15 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:smart_switch_v2/widgets/error_popup.dart';
 
-import '../util/network_util.dart';
-import '../util/database_helper.dart';
-
+import './confirmation_page.dart';
 import '../model/user.dart';
-
+import '../util/database_helper.dart';
+import '../util/network_util.dart';
 import '../widgets/login_btn.dart';
 import '../widgets/login_field.dart';
-
-import 'dart:ui';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -24,6 +24,8 @@ class _SignUpPage extends State<SignUpPage> {
   String deviceId;
   String username;
   int noOfRooms;
+
+  bool progress = false;
 
   var db = new DatabaseHelper();
 
@@ -59,13 +61,6 @@ class _SignUpPage extends State<SignUpPage> {
     return 'Email is not valid';
   }
 
-  String _validateNoOfRooms(String value) {
-    if (value.isEmpty) {
-      return "This field cannot be empty";
-    }
-    return null;
-  }
-
   String _validateDeviceId(String value) {
     if (value.isEmpty) {
       return "Device ID cannot be empty";
@@ -92,14 +87,20 @@ class _SignUpPage extends State<SignUpPage> {
       return "Password cannot be empty";
     }
     if (value.length < 7) {
-      return "Minimum password length is 7";
+      return "Minimum password length is 8";
     }
+
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.cyan),
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -137,17 +138,6 @@ class _SignUpPage extends State<SignUpPage> {
           controller: null,
           onSaved: (value) {
             this.deviceId = value;
-          },
-          obscureText: false,
-        ),
-        LoginInputTextField(
-          labelText: "Number of rooms",
-          prefixIcon: Icon(Icons.border_all),
-          keyboardType: TextInputType.number,
-          validator: _validateNoOfRooms,
-          controller: null,
-          onSaved: (value) {
-            this.noOfRooms = num.parse(value);
           },
           obscureText: false,
         ),
@@ -195,20 +185,22 @@ class _SignUpPage extends State<SignUpPage> {
 
   Widget _loginButton() {
     return LoginButton(
-      child: Text(
-        "SIGN UP",
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            shadows: [
-              Shadow(
-                  color: Colors.deepPurple,
-                  offset: Offset(1, 1),
-                  blurRadius: 1),
-            ],
-            letterSpacing: 1.2),
-      ),
+      child: progress
+          ? CircularProgressIndicator()
+          : Text(
+              "SIGN UP",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  shadows: [
+                    Shadow(
+                        color: Colors.deepPurple,
+                        offset: Offset(1, 1),
+                        blurRadius: 1),
+                  ],
+                  letterSpacing: 1.2),
+            ),
       gradient: LinearGradient(
         colors: <Color>[
           Colors.cyanAccent,
@@ -217,52 +209,63 @@ class _SignUpPage extends State<SignUpPage> {
           Colors.deepPurple[900]
         ],
       ),
-      onPressed: () async {
-        if (_signUpKey.currentState.validate()) {
-          _signUpKey.currentState.save();
-          
-          
-          Map<String, String> response =
-              await signUp(email, deviceId, noOfRooms, password);
+      onPressed: progress
+          ? () {}
+          : () async {
+              setState(() {
+                progress = true;
+              });
+              if (_signUpKey.currentState.validate()) {
+                _signUpKey.currentState.save();
 
-          String error_message = response["error_message"];
-          String x_auth = response["x_auth"];
+                Map<String, String> response =
+                    await signUp(email, deviceId, noOfRooms, password);
 
-          if (error_message == "null" && x_auth == "null") {
-            
-            showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ErrorPopup(
-                        text: "Signup failed. Check your internet connection and try again.",
-                      );
-                    });
-            print("oops sth is very wrong");
-          } else if (x_auth == "null") {
-            print(error_message);
-            print("hello from error");
-            showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ErrorPopup(
-                        text: "Signup failed. Email is already registered.",
-                      );
-                    });
-          } else if (error_message == "null") {
-            print(response["x_auth"]);
-            User user = User(response["x_auth"], deviceId);
-            int result = await db.saveUser(user);
+                String error_message = response["error_message"];
+                String x_auth = response["x_auth"];
 
-            if (result != 0) {
-              print("user saved");
-              Navigator.pushReplacementNamed(context, "/rooms");
+                if (error_message == "null" && x_auth == "null") {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ErrorPopup(
+                          text:
+                              "Signup failed. Check your internet connection and try again.",
+                        );
+                      });
+                  print("oops sth is very wrong");
+                } else if (x_auth == "null") {
+                  print(error_message);
+                  print("hello from error");
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return ErrorPopup(
+                          text: "Signup failed. Email is already registered.",
+                        );
+                      });
+                } else if (error_message == "null") {
+                  print(response["x_auth"]);
+                  User user = User(response["x_auth"], deviceId);
+                  int result = await db.saveUser(user);
 
-            }else{
-              print("not good");
-            }       
-          }
-        }
-      },
+                  if (result != 0) {
+                    print("user saved");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ConfirmationPage(),
+                      ),
+                    );
+                  } else {
+                    print("not good");
+                  }
+                }
+              }
+              setState(() {
+                progress = false;
+              });
+            },
     );
   }
 }

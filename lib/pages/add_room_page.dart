@@ -36,9 +36,11 @@ class _AddRoomState extends State<AddRoom> {
   }
 
   //function to get image
-  Future getImage() async {
+  Future getImage(bool camera) async {
     var image = await ImagePicker.pickImage(
-        source: ImageSource.camera, maxHeight: 500, maxWidth: 500);
+        source: camera ? ImageSource.camera : ImageSource.gallery,
+        maxHeight: 500,
+        maxWidth: 500);
 
     setState(() {
       _roomImage = image;
@@ -119,7 +121,7 @@ class _AddRoomState extends State<AddRoom> {
                     suffixIcon: IconButton(
                       icon: Icon(Icons.camera_alt),
                       onPressed: () {
-                        getImage();
+                        pickCamera();
                       },
                     ),
                     border: OutlineInputBorder(),
@@ -135,7 +137,7 @@ class _AddRoomState extends State<AddRoom> {
               ),
               _buildNoOfRoomsTextField(),
               Padding(
-                padding: EdgeInsets.all(32),
+                padding: EdgeInsets.all(_roomImage == null ? 32 : 0),
               ),
               Container(
                 child: _roomImage != null
@@ -157,7 +159,7 @@ class _AddRoomState extends State<AddRoom> {
                         child: InkWell(
                           splashColor: Colors.transparent,
                           onTap: () {
-                            getImage();
+                            pickCamera();
                           },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -188,5 +190,31 @@ class _AddRoomState extends State<AddRoom> {
             ],
           ),
         ));
+  }
+
+  pickCamera() {
+    showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return new Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              new ListTile(
+                leading: new Icon(Icons.camera),
+                title: new Text('Camera'),
+                onTap: () {
+                  getImage(true);
+                },
+              ),
+              new ListTile(
+                leading: new Icon(Icons.photo_album),
+                title: new Text('Gallery'),
+                onTap: () {
+                  getImage(false);
+                },
+              ),
+            ],
+          );
+        });
   }
 }

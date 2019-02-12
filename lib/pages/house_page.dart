@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:smart_switch_v2/pages/landing_page.dart';
 import 'package:smart_switch_v2/pages/settings.dart';
 import 'package:scoped_model/scoped_model.dart';
-
+import '../util/wifi_check.dart';
 import './room_page.dart';
 
 import '../util/database_helper.dart';
 import '../scoped_model/scoped_room.dart';
 
 import '../model/room.dart';
+import 'add_room_page.dart';
 
 class HousePage extends StatefulWidget {
   final RoomModel model;
@@ -58,9 +59,11 @@ class _HousePageState extends State<HousePage> {
               widget.model.local = !widget.model.local;
               widget.model.mqttState = false;
             });
-            widget.model.local
-                ? showInSnackBar("Switched to local network")
-                : showInSnackBar("Switched to internet network");
+            if (widget.model.local) {
+              _showLocalWifiDialog();
+            } else {
+              showInSnackBar("Switched to internet connection");
+            }
           },
         )
       ],
@@ -89,8 +92,8 @@ class _HousePageState extends State<HousePage> {
             title: Text("Log Out"),
             leading: Icon(Icons.phonelink_off),
             onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => LandingPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => LandingPage()));
             },
           ),
           // Container(
@@ -180,40 +183,78 @@ class _HousePageState extends State<HousePage> {
       key: _scaffoldKey,
       drawer: _buildDrawer(),
       appBar: _buildAppBar(),
+      floatingActionButton: FloatingActionButton.extended(
+        label: Text(
+          "Add Room",
+          style: TextStyle(color: Colors.white),
+        ),
+        icon: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddRoom(),
+            ),
+          );
+        },
+      ),
       bottomNavigationBar: ScopedModelDescendant<RoomModel>(
-          builder: (context, child, model) {
-            if(model.local){
+        builder: (context, child, model) {
+          if (model.local) {
             return InkWell(
               child: Container(
-              height: 48,
-              color: model.mqttState ? Colors.cyan : Colors.red,
-              child: Center(
-                child: Text(
-                model.mqttState ? "Connection Established"
-                    : "You are not connected. Tap here to connect",
-                style: TextStyle(
-                    fontSize: 14, color: Colors.white.withOpacity(0.85)),
-              ),
-              )
-            ),
-            onTap: () {
-
-              model.mqtt.checkMqttConnectionLocal();
-              Future.delayed(Duration(seconds: 2));
-              // if(model.mqtt.client.connectionStatus.state.toString() == "MqttConnectionState.connected"){
-              //   setState((){model.mqttState = true;});
-              // }else{
-              //   setState((){model.mqttState = false;});
-              // }  
-                setState((){model.mqttState = !model.mqttState;});
-            },
-            );}
+                  height: 48,
+                  color: model.mqttState ? Colors.cyan : Colors.red,
+                  child: Center(
+                    child: model.mqttStateChecking
+                        ? LinearProgressIndicator()
+                        : Text(
+                            model.mqttState
+                                ? "Connection Established"
+                                : "You are not connected. Tap here to connect",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.85)),
+                          ),
+                  )),
+              onTap: () async {
+                if (!model.mqttState) {
+                  setState(() {
+                    model.mqttStateChecking = true;
+                  });
+                  String _ssid = await checkSSID();
+                  setState(() {
+                    model.mqttStateChecking = false;
+                  });
+                  if (_ssid.contains("inno_hub")) {
+                    model.mqtt.checkMqttConnectionLocal();
+                    setState(() {
+                      model.mqttState = true;
+                    });
+                  } else {
+                    showInSnackBar(
+                        "Connect to the innohome wifi and try again");
+                  }
+                } else {
+                  setState(() {
+                    model.mqttState = false;
+                  });
+                  print("MQTT OFF");
+                }
+              },
+            );
+          }
           return Visibility(
             visible: false,
-            child: Container(height: 1,),);    
-          },
+            child: Container(
+              height: 1,
+            ),
+          );
+        },
       ),
-
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -245,5 +286,41 @@ class _HousePageState extends State<HousePage> {
         content: Text(value),
       ),
     );
+  }
+
+  void _showLocalWifiDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(top: 24.0),
+                ),
+                Text("Please connect to the InnoHome wifi network"),
+                ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    MaterialButton(
+                      child: Text("Connect", style: TextStyle(color: Colors.white),),
+                      color: Colors.green,
+                      onPressed: () {},
+                    ),
+                    MaterialButton(
+                      child: Text("Close"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                )
+              ],
+            ),
+          );
+        });
   }
 }

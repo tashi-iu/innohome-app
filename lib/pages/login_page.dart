@@ -7,7 +7,7 @@ import '../widgets/login_field.dart';
 import 'dart:ui';
 
 import '../model/user.dart';
-
+import 'forgot_page.dart';
 import '../util/network_util.dart';
 import '../widgets/error_popup.dart';
 
@@ -56,6 +56,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.cyan),
+        elevation: 0,
+        backgroundColor: Colors.white,
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -84,21 +89,42 @@ class _LoginPageState extends State<LoginPage> {
     return ListView(
       reverse: true,
       children: <Widget>[
-        LoginButton(
-          child: _awaitLogIn ? CircularProgressIndicator() : Text(
-            "LOG IN",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              shadows: [
-                Shadow(
-                    color: Colors.deepPurple,
-                    offset: Offset(1, 1),
-                    blurRadius: 1),
-              ],
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            FlatButton(
+              child: Text(
+                "Forgot Password?",
+                style: TextStyle(color: Colors.cyan[800], fontSize: 15),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ForgotPage(),
+                  ),
+                );
+              },
             ),
-          ),
+          ],
+        ),
+        LoginButton(
+          child: _awaitLogIn
+              ? CircularProgressIndicator()
+              : Text(
+                  "LOG IN",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    shadows: [
+                      Shadow(
+                          color: Colors.deepPurple,
+                          offset: Offset(1, 1),
+                          blurRadius: 1),
+                    ],
+                  ),
+                ),
           gradient: LinearGradient(
             colors: <Color>[
               Colors.cyanAccent,
@@ -107,48 +133,54 @@ class _LoginPageState extends State<LoginPage> {
               Colors.deepPurple[900]
             ],
           ),
-          onPressed: _awaitLogIn ? (){return null;} : () async {
-            if (_signUpKey.currentState.validate()) {
-              _signUpKey.currentState.save();
-              print("validation completed");
-              print("$email, $password");
-              setState(() {
-                _awaitLogIn = true;
-              });
-              Map<String, String> response = await login(email, password);
-              setState(() {
-                _awaitLogIn = false;
-              });
-
-              String error_message = response["error_message"];
-              String x_auth = response["x_auth"];
-
-              if (error_message == "null" && x_auth == "null") {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ErrorPopup(
-                        text: "Could not connect to server. Check your connection and try again",
-                      );
-                    });
-              } else if (x_auth == "null") {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ErrorPopup(
-                        text: "Login failed. Make sure you are registered and recheck the fields.",
-                      );
-                    });
-              } else if (error_message == "null") {
-                User user = User(response["x_auth"], "qwertyuiop");
-                int result = await db.saveUser(user);
-
-                if (result != 0) {
-                  Navigator.pushReplacementNamed(context, "/rooms");
+          onPressed: _awaitLogIn
+              ? () {
+                  return null;
                 }
-              }
-            }
-          },
+              : () async {
+                  if (_signUpKey.currentState.validate()) {
+                    _signUpKey.currentState.save();
+                    print("validation completed");
+                    print("$email, $password");
+                    setState(() {
+                      _awaitLogIn = true;
+                    });
+                    Map<String, String> response = await login(email, password);
+                    setState(() {
+                      _awaitLogIn = false;
+                    });
+
+                    String error_message = response["error_message"];
+                    String x_auth = response["x_auth"];
+
+                    if (error_message == "null" && x_auth == "null") {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ErrorPopup(
+                              text:
+                                  "Could not connect to server. Check your connection and try again",
+                            );
+                          });
+                    } else if (x_auth == "null") {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ErrorPopup(
+                              text:
+                                  "Login failed. Make sure you are registered and recheck the fields.",
+                            );
+                          });
+                    } else if (error_message == "null") {
+                      User user = User(response["x_auth"], "qwertyuiop");
+                      int result = await db.saveUser(user);
+
+                      if (result != 0) {
+                        Navigator.pushReplacementNamed(context, "/rooms");
+                      }
+                    }
+                  }
+                },
         ),
         LoginInputTextField(
           labelText: "Password",
