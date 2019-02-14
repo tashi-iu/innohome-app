@@ -9,8 +9,8 @@ class Room {
   String _roomName;
   Uint8List _roomImage;
 
-  Room(int houseId, String roomName, File roomImage, int noOfLights) {
-    this._houseId = houseId;
+  Room(int roomId, String roomName, File roomImage, int noOfLights) {
+    this._id = roomId;
     this._roomName = roomName;
     this._roomImage = roomImage.readAsBytesSync();
     this._noOfLights = noOfLights;
@@ -40,6 +40,9 @@ class Room {
 
   set roomImage(Uint8List image) {
     this._roomImage = image;
+  }
+  set roomId(int id){
+    this.roomId = id;
   }
 
   set noOfLights(int noOfLights){

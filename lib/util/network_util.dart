@@ -5,55 +5,125 @@ import 'dart:convert';
 import '../config/config_api_endpoints.dart';
 
 Future<Map> postData(String room, String switchName, String toggle, String xAuth) async {
-  String sourceURL = "https://innohomeserver.app.render.com/smart-switch/mainhub";
+  String sourceURL = postDataEndPoint;
 
   Map<String, String> data = {"room":"$room", "switchName":"$switchName", "status":"$toggle"};
-
+  
   http.Response response = await http.post(sourceURL, body: json.encode(data), headers: {"Content-type": "application/json", "Accept": "application/json", "x-auth": xAuth});
   print(data);
   return data;
 }
 
-Future<Map> signUp(String email, String deviceId,
-    int noOfRooms, String password) async {
+
+//user signs up and get verification code.
+Future<Map> signUp(String email, String deviceId) async {
   String sourceURL = signUpEndPoint;
 
   Map<String, dynamic> body = {
     "email": email,
     "deviceId": deviceId,
-    "noOfRooms": noOfRooms,
-    "password": password
   };
 
   try {
     http.Response response = await http.post(sourceURL,
         headers: {'content-type': 'application/json'}, body: json.encode(body));
     Map<String, dynamic> responseBody = json.decode(response.body);
-    Map<String, dynamic> responseHeaders = response.headers;
-
     Map<String, String> obj = {
-      "x_auth": "${responseHeaders["x-auth"]}",
-      "error_message": "${responseBody["error_message"]}",
+      "type": "${responseBody["type"]}",
+      "message": "${responseBody["message"]}",
     };
     return obj;
+
   } catch (err) {
     print("no network bahi");
   }
 
   Map<String, String> obj = {
-    "x_auth": "null",
-    "error_message": "null",
+    "message": "null",
+    "type": "null",
   };
 
   return obj;
 }
 
-Future<Map> login(String email String password) async {
-  String sourceURL = loginEndPoint;
+// Sign up verification
+Future<Map> verifySignUp(String email, String code) async {
+  String sourceURL = verifySignUpEndPoint;
 
   Map<String, dynamic> body = {
     "email": email,
-    "password": password
+    "verificationCode": code,
+  };
+
+  try {
+    http.Response response = await http.post(sourceURL,
+        headers: {'content-type': 'application/json'}, body: json.encode(body));
+    Map<String, dynamic> responseBody = json.decode(response.body);
+    Map<String, dynamic> responseHeaders = response.headers;
+
+    Map<String, String> obj = {
+      "type": "${responseBody["type"]}",
+      "message": "${responseBody["message"]}",
+      "x-auth": "${responseHeaders["x-auth"]}"
+    };
+    return obj;
+
+  } catch (err) {
+    print("no network bahi");
+  }
+
+  Map<String, String> obj = {
+    "message": "null",
+    "type": "null",
+    "x-auth": "null"
+  };
+
+  return obj;
+}
+
+
+// Logim up verification
+Future<Map> verifyLogin(String email, String code) async {
+  String sourceURL = verifyLoginEndPoint;
+
+  Map<String, dynamic> body = {
+    "email": email,
+    "loginCode": code,
+  };
+
+  try {
+    http.Response response = await http.post(sourceURL,
+        headers: {'content-type': 'application/json'}, body: json.encode(body));
+    Map<String, dynamic> responseBody = json.decode(response.body);
+    Map<String, dynamic> responseHeaders = response.headers;
+
+    Map<String, String> obj = {
+      "type": "${responseBody["type"]}",
+      "message": "${responseBody["message"]}",
+      "x-auth": "${responseHeaders["x-auth"]}",
+      "deviceId":"${responseBody["deviceId"]}"
+    };
+    return obj;
+
+  } catch (err) {
+    print("no network bahi");
+  }
+
+  Map<String, String> obj = {
+    "message": "null",
+    "type": "null",
+    "x-auth": "null"
+  };
+
+  return obj;
+}
+
+
+Future<Map> login(String email) async {
+  String sourceURL = loginEndPoint;
+
+  Map<String, dynamic> body = {
+    "email": email
   };
 
   try {
@@ -61,11 +131,10 @@ Future<Map> login(String email String password) async {
     http.Response response = await http.post(sourceURL,
         headers: {'content-type': 'application/json'}, body: json.encode(body));
     Map<String, dynamic> responseBody = json.decode(response.body);
-    Map<String, dynamic> responseHeaders = response.headers;
 
     Map<String, String> obj = {
-      "x_auth": "${responseHeaders["x-auth"]}",
-      "error_message": "${responseBody["error_message"]}",
+      "type": "${responseBody["type"]}",
+      "message": "${responseBody["message"]}",
     };
     return obj;
     
@@ -74,8 +143,8 @@ Future<Map> login(String email String password) async {
   }
 
   Map<String, String> obj = {
-    "x_auth": "null",
-    "error_message": "null",
+    "type": "null",
+    "message": "null",
   };
 
   return obj;

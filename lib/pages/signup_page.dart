@@ -29,14 +29,6 @@ class _SignUpPage extends State<SignUpPage> {
 
   var db = new DatabaseHelper();
 
-  TextEditingController _passwordController;
-
-  @override
-  void initState() {
-    _passwordController = TextEditingController();
-    super.initState();
-  }
-
   String _validateEmail(String value) {
     if (value.isEmpty) {
       // The form is empty
@@ -72,26 +64,7 @@ class _SignUpPage extends State<SignUpPage> {
     return null;
   }
 
-  String _validateConfirmPassword(String value) {
-    if (value.isEmpty) {
-      return "Enter your password again";
-    }
-    if (value != _passwordController.text) {
-      return "Password does not match";
-    }
-    return null;
-  }
-
-  String _validatePassword(String value) {
-    if (value.isEmpty) {
-      return "Password cannot be empty";
-    }
-    if (value.length < 7) {
-      return "Minimum password length is 8";
-    }
-
-    return null;
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -140,24 +113,6 @@ class _SignUpPage extends State<SignUpPage> {
             this.deviceId = value;
           },
           obscureText: false,
-        ),
-        LoginInputTextField(
-          labelText: "Retype new password",
-          prefixIcon: Icon(Icons.lock),
-          keyboardType: TextInputType.text,
-          validator: _validateConfirmPassword,
-          obscureText: true,
-        ),
-        LoginInputTextField(
-          labelText: "New password",
-          prefixIcon: Icon(Icons.lock),
-          keyboardType: TextInputType.text,
-          validator: _validatePassword,
-          controller: _passwordController,
-          onSaved: (value) {
-            this.password = value;
-          },
-          obscureText: true,
         ),
         LoginInputTextField(
           labelText: "Email address",
@@ -218,13 +173,12 @@ class _SignUpPage extends State<SignUpPage> {
               if (_signUpKey.currentState.validate()) {
                 _signUpKey.currentState.save();
 
-                Map<String, String> response =
-                    await signUp(email, deviceId, noOfRooms, password);
+                Map<String, String> response = await signUp(email, deviceId);
 
-                String error_message = response["error_message"];
-                String x_auth = response["x_auth"];
+                String message = response["message"];
+                String type = response["type"];
 
-                if (error_message == "null" && x_auth == "null") {
+                if (message == "null" || type == "null") {
                   showDialog(
                       context: context,
                       builder: (context) {
@@ -234,32 +188,24 @@ class _SignUpPage extends State<SignUpPage> {
                         );
                       });
                   print("oops sth is very wrong");
-                } else if (x_auth == "null") {
-                  print(error_message);
+                } else if (type == "error") {
+                  print(message);
                   print("hello from error");
                   showDialog(
                       context: context,
                       builder: (context) {
                         return ErrorPopup(
-                          text: "Signup failed. Email is already registered.",
+                          text: message,
                         );
                       });
-                } else if (error_message == "null") {
-                  print(response["x_auth"]);
-                  User user = User(response["x_auth"], deviceId);
-                  int result = await db.saveUser(user);
-
-                  if (result != 0) {
-                    print("user saved");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ConfirmationPage(),
-                      ),
-                    );
-                  } else {
-                    print("not good");
-                  }
+                } else if (type == "success") {
+                  
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ConfirmationPage(email, deviceId),
+                    ),
+                  );
                 }
               }
               setState(() {

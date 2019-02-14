@@ -20,8 +20,9 @@ class _AddRoomState extends State<AddRoom> {
 
   TextEditingController _roomNameController;
   TextEditingController _noOfLightController;
-
-  int _houseId = 1;
+  TextEditingController _roomIdController;
+  
+  int _roomId;
   int _noOfRooms;
   String _roomName = 'New Room';
   File _roomImage;
@@ -32,6 +33,7 @@ class _AddRoomState extends State<AddRoom> {
   void initState() {
     _roomNameController = TextEditingController();
     _noOfLightController = TextEditingController();
+    _roomIdController = TextEditingController();
     super.initState();
   }
 
@@ -66,6 +68,25 @@ class _AddRoomState extends State<AddRoom> {
     );
   }
 
+  Widget _buildRoomIdTextField(){
+    return Padding(
+      padding: EdgeInsets.all(8),
+      child: TextFormField(
+        controller: _roomIdController,
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Room ID',
+        ),
+        validator: (value) {
+          if (value.isEmpty) {
+            return "This field is mandatory";
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,28 +104,40 @@ class _AddRoomState extends State<AddRoom> {
               onPressed: () async {
                 if (_formKey.currentState.validate() && _roomImage != null) {
                   setState(() {
+                    _roomId = num.parse(_roomIdController.text);
                     _roomName = _roomNameController.text;
                     _noOfRooms = num.parse(_noOfLightController.text);
                   });
 
-                  Room room = Room(_houseId, _roomName, _roomImage, _noOfRooms);
+                  Room oldRoom = await db.getRoom(_roomId);
+                  
+                  if(oldRoom != null){
+                    //pop up error saying roomid is already registered
+                    print("bro room is gone");
+                    return; 
+                  }else{
+
+
+                  Room room = Room( _roomId, _roomName, _roomImage, _noOfRooms);
+                  
                   int res = await db.saveRoom(room);
-                  List _rooms = await db.getAllRooms();
+                  
+                  // List _rooms = await db.getAllRooms();
 
-                  // print("heyyyyyyy");
-                  // _rooms.forEach((room){
-                  //   print("rooming");
-                  //   print(room);
-                  //   print("...........");
-                  // });
-                  // print('this is the room i need bitch ');
-                  print("${_rooms.last['id']}");
+                  // // print("heyyyyyyy");
+                  // // _rooms.forEach((room){
+                  // //   print("rooming");
+                  // //   print(room);
+                  // //   print("...........");
+                  // // });
+                  // // print('this is the room i need bitch ');
+                  // print("${_rooms.last['id']}");
 
-                  generatelightsAndSaveToDb(_rooms.last["id"]);
+                  generatelightsAndSaveToDb(_roomId);
                   if (res != 0) {
                     Navigator.pushReplacementNamed(context, '/rooms');
                   }
-                }
+                }}
               },
             )
           ],
@@ -135,6 +168,7 @@ class _AddRoomState extends State<AddRoom> {
                   },
                 ),
               ),
+              _buildRoomIdTextField(),
               _buildNoOfRoomsTextField(),
               Padding(
                 padding: EdgeInsets.all(_roomImage == null ? 32 : 0),
@@ -145,11 +179,18 @@ class _AddRoomState extends State<AddRoom> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Container(
-                            color: Colors.black54,
-                            margin: EdgeInsets.all(62),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(4)
+                            ),
+                            width: double.infinity,
+                            height: 225,
+                            margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                             padding: EdgeInsets.all(2),
                             child: Image.file(
                               _roomImage,
+                              fit: BoxFit.cover,
+                              
                             ),
                           ),
                         ],

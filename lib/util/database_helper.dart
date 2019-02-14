@@ -108,7 +108,8 @@ class DatabaseHelper {
   Future<int> updateUser(User user) async {
     var dbClient = await db;
 
-    dbClient.update(tableUser, user.toMap(), where: "$columnUserId = ?", whereArgs: [user.id]);
+    int res = await dbClient.update(tableUser, user.toMap(), where: "$columnUserId = ?", whereArgs: [user.id]);
+    return res;
   }
 
   Future<User> getUser(int id) async {

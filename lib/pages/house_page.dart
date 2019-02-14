@@ -10,6 +10,7 @@ import '../scoped_model/scoped_room.dart';
 
 import '../model/room.dart';
 import 'add_room_page.dart';
+import 'about_page.dart';
 
 class HousePage extends StatefulWidget {
   final RoomModel model;
@@ -89,6 +90,14 @@ class _HousePageState extends State<HousePage> {
             },
           ),
           ListTile(
+            title: Text("About Us"),
+            leading: Icon(Icons.people),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AboutPage()));
+            },
+          ),
+          ListTile(
             title: Text("Log Out"),
             leading: Icon(Icons.phonelink_off),
             onTap: () {
@@ -108,8 +117,8 @@ class _HousePageState extends State<HousePage> {
   Widget buildRoomCard(int index) {
     return ScopedModelDescendant(
         builder: (BuildContext context, Widget child, RoomModel model) {
-      Room room = model.getRoom(index);
-      //print(room.toMap());
+      Room room = model.getRoomFromList(index);
+      print(room.toMap()); //print(room.toMap());
 
       return Material(
         color: Colors.transparent,
@@ -127,8 +136,8 @@ class _HousePageState extends State<HousePage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        RoomPage(room.id, room.roomName, lights)));
+                    builder: (BuildContext context) => RoomPage(
+                        room.id, room.roomName, room.roomImage, lights)));
           },
           child: Hero(
             tag: room.id,
@@ -206,34 +215,37 @@ class _HousePageState extends State<HousePage> {
           if (model.local) {
             return InkWell(
               child: Container(
-                  height: 48,
-                  color: model.mqttState ? Colors.cyan : Colors.red,
-                  child: Center(
-                    child: model.mqttStateChecking
-                        ? LinearProgressIndicator()
-                        : Text(
-                            model.mqttState
-                                ? "Connection Established"
-                                : "You are not connected. Tap here to connect",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white.withOpacity(0.85)),
-                          ),
-                  )),
+                height: 48,
+                color: model.mqttState ? Colors.cyan : Colors.red,
+                child: Center(
+                  child: model.mqttStateChecking
+                      ? LinearProgressIndicator()
+                      : Text(
+                          model.mqttState
+                              ? "Connection Established"
+                              : "You are not connected. Tap here to connect",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.85)),
+                        ),
+                ),
+              ),
               onTap: () async {
                 if (!model.mqttState) {
                   setState(() {
                     model.mqttStateChecking = true;
                   });
                   String _ssid = await checkSSID();
+                  print(_ssid);
                   setState(() {
                     model.mqttStateChecking = false;
                   });
-                  if (_ssid.contains("inno_hub")) {
-                    model.mqtt.checkMqttConnectionLocal();
-                    setState(() {
-                      model.mqttState = true;
-                    });
+                  model.mqtt.checkMqttConnectionLocal();
+                  setState(() {
+                    model.mqttState = true;
+                  });
+                  if (_ssid.contains("inno")) {
+                    print("yes");
                   } else {
                     showInSnackBar(
                         "Connect to the innohome wifi and try again");
@@ -306,7 +318,10 @@ class _HousePageState extends State<HousePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     MaterialButton(
-                      child: Text("Connect", style: TextStyle(color: Colors.white),),
+                      child: Text(
+                        "Connect",
+                        style: TextStyle(color: Colors.white),
+                      ),
                       color: Colors.green,
                       onPressed: () {},
                     ),

@@ -11,21 +11,22 @@ import 'house_page.dart';
 import '../util/network_util.dart';
 import '../util/database_helper.dart';
 
-class ConfirmationPage extends StatefulWidget {
+class LoginConfirmationPage extends StatefulWidget {
   final String email;
-  final String deviceId;
-  ConfirmationPage(this.email, this.deviceId);
+
+  LoginConfirmationPage(this.email);
+  
   @override
-  State<StatefulWidget> createState() => _ConfirmationPageState();
+  State<StatefulWidget> createState() => _LoginConfirmationPageState();
 }
 
-class _ConfirmationPageState extends State<ConfirmationPage> {
+class _LoginConfirmationPageState extends State<LoginConfirmationPage> {
   var db = DatabaseHelper();
 
   final _signUpKey = GlobalKey<FormState>();
   TextEditingController _verificationController = new TextEditingController();
 
-  String _validateVerificationCode(String value) {
+  String _validateLoginCode(String value) {
     if (value.isEmpty) {
       return "Device ID cannot be empty";
     }
@@ -63,7 +64,6 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
     return ListView(
       reverse: true,
       children: <Widget>[
-        
         _confirmButton(),
         FlatButton(
           child: Text("RESEND CODE"),
@@ -74,7 +74,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
         LoginInputTextField(
           obscureText: false,
           controller: _verificationController,
-          validator: _validateVerificationCode,
+          validator: _validateLoginCode,
         ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 18.0),
@@ -116,11 +116,12 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
         if (_signUpKey.currentState.validate()) {
           String code = _verificationController.text;
 
-          Map<String, String> response = await verifySignUp(widget.email, code);
+          Map<String, String> response = await verifyLogin(widget.email, code);
 
           String x_auth = response["x-auth"];
           String message = response["message"];
           String type = response["type"];
+          String deviceId = response["deviceId"];
 
           if (type == "null") {
             //dialog box error
@@ -131,27 +132,28 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
             //dialog box error
             //print the message
           } else if (type == "success") {
-            //save user and be done
-
-            print(x_auth);
-            User user = User(x_auth, widget.deviceId);
-            int result;
-            result = await db.saveUser(user);
-
-            if (result != 0) {
-              print("user saved");
+            
+            User user = await db.getUser(1);
+            
+            if(user == null){
+              User user = User(x_auth, deviceId);
+              int res = await db.saveUser(user);
+              if(res != 0){
+              print("user saved login");
               Navigator.pushReplacementNamed(context, "/rooms");
-            } else {
-              print("error ");
+            }
+
+            }
+            Map<String, dynamic> obj = user.toMap();
+            User updatedUser = User.fromMap({"id": obj["id"], "userToken":x_auth, "deviceId": obj["deviceId"]});
+            
+            int res = await db.updateUser(updatedUser);
+            
+            if(res != 0){
+              print("user updated");
+              Navigator.pushReplacementNamed(context, "/rooms");
             }
           }
-
-          // Map<String, String> obj = {
-          //   "message": "null",
-          //   "type": "null",
-          //   "x-auth": "null"
-          // };
-
         }
       },
     );

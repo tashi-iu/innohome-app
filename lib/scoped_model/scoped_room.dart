@@ -39,7 +39,8 @@ class RoomModel extends Model {
     notifyListeners();
   }
 
-  Room getRoom(int index) {
+
+  Room getRoomFromList(int index) {
     return _rooms[index];
   }
 
