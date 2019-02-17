@@ -242,5 +242,11 @@ class DatabaseHelper {
 
     return dbClient.delete(tableLight, where: "$columnLightId = ?", whereArgs: [id]);
   }  
+
+  Future<int> deleteLights(int roomId) async {
+    var dbClient = await db;
+    return dbClient.delete(tableLight, where: "$columnForeignRoomId = ?", whereArgs: [roomId]);
+
+  }
 }
 

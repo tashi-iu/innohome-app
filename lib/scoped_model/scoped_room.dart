@@ -9,7 +9,7 @@ import '../util/mqtt_util.dart';
 
 class RoomModel extends Model {
   var db = DatabaseHelper();
-  bool local = true;
+  bool local = false;
   int noOfLights = 0;
   String xAuth = " ";
   

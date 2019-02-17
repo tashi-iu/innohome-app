@@ -22,6 +22,8 @@ class ConfirmationPage extends StatefulWidget {
 class _ConfirmationPageState extends State<ConfirmationPage> {
   var db = DatabaseHelper();
 
+  bool _loading = false;
+
   final _signUpKey = GlobalKey<FormState>();
   TextEditingController _verificationController = new TextEditingController();
 
@@ -63,12 +65,11 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
     return ListView(
       reverse: true,
       children: <Widget>[
-        
         _confirmButton(),
         FlatButton(
           child: Text("RESEND CODE"),
           onPressed: () {
-            // TO-DO RINZIN : Resend code to email function
+            Navigator.pop(context);
           },
         ),
         LoginInputTextField(
@@ -91,7 +92,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
   Widget _confirmButton() {
     return LoginButton(
       child: Text(
-        "CONFIRM",
+        _loading ? CircularProgressIndicator() : "CONFIRM",
         style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -112,48 +113,83 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
           Colors.deepPurple[900]
         ],
       ),
-      onPressed: () async {
-        if (_signUpKey.currentState.validate()) {
-          String code = _verificationController.text;
+      onPressed: _loading
+          ? () {}
+          : () async {
+              if (_signUpKey.currentState.validate()) {
+                String code = _verificationController.text;
+                setState(() {
+                  _loading = true;
+                });
+                Map<String, String> response =
+                    await verifySignUp(widget.email, code);
+                setState(() {
+                  _loading = false;
+                });
+                String x_auth = response["x-auth"];
+                String message = response["message"];
+                String type = response["type"];
 
-          Map<String, String> response = await verifySignUp(widget.email, code);
+                if (type == "null") {
+                  _showDialog("You don't seem to be connected to the internet");
+                } else if (type == "error") {
+                  _showDialog(
+                      "Unfortunately, there seems to be an error. Please try again later, or contact customer care");
+                } else if (type == "success") {
+                  print(x_auth);
+                  User user = User(x_auth, widget.deviceId);
+                  int result;
+                  result = await db.saveUser(user);
 
-          String x_auth = response["x-auth"];
-          String message = response["message"];
-          String type = response["type"];
+                  if (result != 0) {
+                    print("user saved");
+                    Navigator.pushReplacementNamed(context, "/rooms");
+                  } else {
+                    print("error ");
+                  }
+                }
 
-          if (type == "null") {
-            //dialog box error
-            //to do tashi no network,
+                // Map<String, String> obj = {
+                //   "message": "null",
+                //   "type": "null",
+                //   "x-auth": "null"
+                // };
 
-          } else if (type == "error") {
-            //to do tashi
-            //dialog box error
-            //print the message
-          } else if (type == "success") {
-            //save user and be done
-
-            print(x_auth);
-            User user = User(x_auth, widget.deviceId);
-            int result;
-            result = await db.saveUser(user);
-
-            if (result != 0) {
-              print("user saved");
-              Navigator.pushReplacementNamed(context, "/rooms");
-            } else {
-              print("error ");
-            }
-          }
-
-          // Map<String, String> obj = {
-          //   "message": "null",
-          //   "type": "null",
-          //   "x-auth": "null"
-          // };
-
-        }
-      },
+              }
+            },
     );
+  }
+
+  void _showDialog(String text) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Padding(
+              padding: EdgeInsets.all(18),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    text,
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 18),
+                    child: FlatButton(
+                      child: Text(
+                        "Dismiss",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

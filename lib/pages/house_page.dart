@@ -1,16 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:smart_switch_v2/pages/landing_page.dart';
-import 'package:smart_switch_v2/pages/settings.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:scoped_model/scoped_model.dart';
-import '../util/wifi_check.dart';
+import 'package:smart_switch_v2/pages/landing_page.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:wifi/wifi.dart';
+
 import './room_page.dart';
-
-import '../util/database_helper.dart';
-import '../scoped_model/scoped_room.dart';
-
 import '../model/room.dart';
-import 'add_room_page.dart';
+import '../scoped_model/scoped_room.dart';
+import '../util/database_helper.dart';
 import 'about_page.dart';
+import 'add_room_page.dart';
+import 'help_page.dart';
+import 'landing_page.dart';
 
 class HousePage extends StatefulWidget {
   final RoomModel model;
@@ -23,7 +28,7 @@ class HousePage extends StatefulWidget {
 class _HousePageState extends State<HousePage> {
   var db = DatabaseHelper();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
+  bool connected = false;
   @override
   void initState() {
     super.initState();
@@ -55,15 +60,31 @@ class _HousePageState extends State<HousePage> {
         IconButton(
           icon: Icon(
               widget.model.local ? Icons.home : Icons.settings_input_antenna),
-          onPressed: () {
+          onPressed: () async {
             setState(() {
               widget.model.local = !widget.model.local;
               widget.model.mqttState = false;
             });
             if (widget.model.local) {
-              _showLocalWifiDialog();
+              String _ssid = await Wifi.ssid;
+              if (_ssid.toLowerCase().contains("innohome")) {
+                setState(() {
+                  connected = true;
+                });
+              } else {
+                setState(() {
+                  connected = false;
+                });
+              }
+              if (!connected) {
+                _showLocalWifiDialog();
+              }
             } else {
-              showInSnackBar("Switched to internet connection");
+              String _ssid = await Wifi.ssid;
+              if (_ssid.toLowerCase().contains("innohome")) {
+                _showInternetDialog();
+              } else
+                showInSnackBar("Switched to internet connection");
             }
           },
         )
@@ -76,32 +97,35 @@ class _HousePageState extends State<HousePage> {
     return Drawer(
       elevation: 1,
       child: ListView(
-        padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            child: Text("InnoHome"),
-          ),
           ListTile(
-            title: Text("Settings"),
-            leading: Icon(Icons.settings),
+            title: Text("Help"),
+            leading: Icon(Icons.people),
             onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Settings()));
+              Navigator.push(this.context,
+                  MaterialPageRoute(builder: (context) => HelpPage()));
             },
           ),
           ListTile(
             title: Text("About Us"),
             leading: Icon(Icons.people),
             onTap: () {
-              Navigator.push(context,
+              Navigator.push(this.context,
                   MaterialPageRoute(builder: (context) => AboutPage()));
             },
           ),
           ListTile(
             title: Text("Log Out"),
-            leading: Icon(Icons.phonelink_off),
-            onTap: () {
-              Navigator.push(context,
+            leading: Icon(Icons.exit_to_app),
+            onTap: () async {
+              Directory documentDirectory =
+                  await getApplicationDocumentsDirectory();
+
+              String path = join(documentDirectory.path, "smartSwitch.db");
+
+              await deleteDatabase(path);
+
+              Navigator.pushReplacement(this.context,
                   MaterialPageRoute(builder: (context) => LandingPage()));
             },
           ),
@@ -118,20 +142,12 @@ class _HousePageState extends State<HousePage> {
     return ScopedModelDescendant(
         builder: (BuildContext context, Widget child, RoomModel model) {
       Room room = model.getRoomFromList(index);
-      print(room.toMap()); //print(room.toMap());
 
       return Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () async {
-            //print(room.toMap());
-
             List<Map<String, dynamic>> lights = await db.getAllLights(room.id);
-
-            // print("lights are");
-            // lights.forEach((light){
-            //   print(light);
-            // });
 
             Navigator.push(
                 context,
@@ -230,26 +246,16 @@ class _HousePageState extends State<HousePage> {
                         ),
                 ),
               ),
-              onTap: () async {
+              onTap: () {
                 if (!model.mqttState) {
                   setState(() {
                     model.mqttStateChecking = true;
                   });
-                  String _ssid = await checkSSID();
-                  print(_ssid);
-                  setState(() {
-                    model.mqttStateChecking = false;
-                  });
                   model.mqtt.checkMqttConnectionLocal();
                   setState(() {
+                    model.mqttStateChecking = false;
                     model.mqttState = true;
                   });
-                  if (_ssid.contains("inno")) {
-                    print("yes");
-                  } else {
-                    showInSnackBar(
-                        "Connect to the innohome wifi and try again");
-                  }
                 } else {
                   setState(() {
                     model.mqttState = false;
@@ -302,7 +308,8 @@ class _HousePageState extends State<HousePage> {
 
   void _showLocalWifiDialog() {
     showDialog(
-        context: context,
+        barrierDismissible: false,
+        context: this.context,
         builder: (BuildContext context) {
           return Dialog(
             child: Column(
@@ -310,29 +317,173 @@ class _HousePageState extends State<HousePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(top: 24.0),
+                  padding: EdgeInsets.all(18.0),
+                  child: Text(
+                    "You don't seem to be connected. Please connect to the InnoHome wifi network and try again",
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-                Text("Please connect to the InnoHome wifi network"),
-                ButtonBar(
-                  alignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    MaterialButton(
-                      child: Text(
-                        "Connect",
-                        style: TextStyle(color: Colors.white),
+                Divider(),
+                ScopedModelDescendant<RoomModel>(
+                  builder: (BuildContext context, Widget child, Model model) {
+                    return ListTile(
+                      title: Text(
+                        "Try again",
+                        style: TextStyle(color: Colors.cyan),
+                        textAlign: TextAlign.center,
                       ),
-                      color: Colors.green,
-                      onPressed: () {},
-                    ),
-                    MaterialButton(
-                      child: Text("Close"),
-                      onPressed: () {
+                      onTap: () async {
+                        String _ssid = await Wifi.ssid;
+                        if (_ssid.toLowerCase().contains("innohome")) {
+                          setState(() {
+                            widget.model.local = true;
+                            connected = true;
+                          });
+                          widget.model.mqtt.checkMqttConnectionLocal();
+                          showInSnackBar("Switched to local network");
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    );
+                  },
+                ),
+
+                // ListView.builder(
+                //   shrinkWrap: true,
+                //   itemCount: this.wifiList.length,
+                //   itemBuilder: (BuildContext context, int index) {
+                //     if (wifiList.length == 0) {
+                //       return Container(
+                //         child: Text(
+                //             "innoHome WiFi network seems to be out of range"),
+                //       );
+                //     }
+                //     String innoWifi = wifiList[index].ssid;
+                //     if (innoWifi.toLowerCase().contains("inno") == true) {
+                //       return ExpansionTile(
+                //         leading: Icon(Icons.wifi),
+                //         title: Text(wifiList[index].ssid),
+                //         children: <Widget>[
+                //           LoginInputTextField(
+                //             labelText: "Password",
+                //             obscureText: true,
+                //             controller: _wifiPasswordCtrl,
+                //           ),
+                //           ListTile(
+                //             title: Text(
+                //               "Connect",
+                //               textAlign: TextAlign.center,
+                //             ),
+                //             onTap: () {
+                //               print(innoWifi);
+                //               print(_wifiPasswordCtrl.text);
+
+                //               Wifi.connection(innoWifi, _wifiPasswordCtrl.text)
+                //                   .then((v) {
+                //                 print(v);
+                //               });
+                //             },
+                //           )
+                //         ],
+                //       );
+                //     }
+                //   },
+                // ),
+                Divider(),
+                ScopedModelDescendant<RoomModel>(
+                  builder:
+                      (BuildContext context, Widget child, RoomModel model) {
+                    return ListTile(
+                        title: Text(
+                          "Cancel",
+                          style: TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            widget.model.local = false;
+                            connected = false;
+                          });
+                          showInSnackBar("Switched to internet connection");
+                          Navigator.pop(context);
+                        });
+                  },
+                ),
+                Divider()
+              ],
+            ),
+          );
+        });
+  }
+
+  void _showInternetDialog() {
+    showDialog(
+        barrierDismissible: false,
+        context: this.context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(18.0),
+                  child: Text(
+                    "You seem to be connected to the innoHome network. Please connect to the internet and try again",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                Divider(),
+                ScopedModelDescendant<RoomModel>(
+                  builder: (BuildContext context, Widget child, Model model) {
+                    return ListTile(
+                      title: Text(
+                        "Try again",
+                        style: TextStyle(color: Colors.cyan),
+                        textAlign: TextAlign.center,
+                      ),
+                      onTap: () async {
+                        String _ssid = await Wifi.ssid;
+                        if (_ssid.toLowerCase().contains("innohome")) {
+                          setState(() {
+                            widget.model.local = true;
+                            connected = true;
+                          });
+                          showInSnackBar("Switched to Local Network");
+                        } else {
+                          setState(() {
+                            widget.model.local = false;
+                            connected = false;
+                          });
+                          showInSnackBar("Switched to Internet Connection");
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    );
+                  },
+                ),
+                Divider(),
+                ScopedModelDescendant<RoomModel>(
+                  builder:
+                      (BuildContext context, Widget child, RoomModel model) {
+                    return ListTile(
+                      title: Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                      onTap: () {
+                        setState(() {
+                          widget.model.local = true;
+                          connected = true;
+                        });
+                        showInSnackBar("Switched to local network.");
                         Navigator.of(context).pop();
                       },
-                    ),
-                  ],
-                )
+                    );
+                  },
+                ),
+                Divider()
               ],
             ),
           );

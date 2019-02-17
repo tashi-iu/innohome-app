@@ -67,14 +67,14 @@ class _RoomPageState extends State<RoomPage> {
           //     ),
           //   ),
           // ),
-          floatingActionButton: FloatingActionButton.extended(
-            label: Text(
-              "Add Light",
-              style: TextStyle(color: Colors.white),
-            ),
-            icon: Icon(Icons.add, color: Colors.white),
-            onPressed: () {},
-          ),
+          // floatingActionButton: FloatingActionButton.extended(
+          //   label: Text(
+          //     "Add Light",
+          //     style: TextStyle(color: Colors.white),
+          //   ),
+          //   icon: Icon(Icons.add, color: Colors.white),
+          //   onPressed: () {},
+          // ),
           body: NestedScrollView(
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
@@ -86,8 +86,8 @@ class _RoomPageState extends State<RoomPage> {
                   pinned: true,
                   actions: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: (){
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
                         _showRoomDialog(widget.roomName, widget.roomId);
                       },
                     )
@@ -135,61 +135,65 @@ class _RoomPageState extends State<RoomPage> {
         context: context,
         builder: (BuildContext context) {
           return Dialog(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "Are you sure you want to delete the room '$roomName'?",
-                  style: TextStyle(fontSize: 42),
-                ),
-                ButtonBar(
-                  alignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    MaterialButton(
-                      child: Text(
-                        "Delete Room",
-                        style: TextStyle(color: Colors.white),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "Are you sure you want to delete the room '$roomName'?",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  ButtonBar(
+                    alignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      MaterialButton(
+                        child: Text(
+                          "Delete Room",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: Colors.red,
+                        onPressed: () async {
+                          int res = await db.deleteRoom(roomId);
+                          int res2 = await db.deleteLights(roomId);
+                          
+                          Navigator.pushReplacementNamed(context, "/rooms");
+                        },
                       ),
-                      color: Colors.red,
-                      onPressed: () async {
-                        int res = await db.deleteRoom(roomId);
-                        Navigator.pushReplacementNamed(context, "/rooms");
-
-                        // TO DO RINZIN : DELETE ROOM
-                      },
-                    ),
-                    MaterialButton(
-                      child: Text("Cancel"),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                )
-              ],
+                      MaterialButton(
+                        child: Text("Cancel"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           );
         });
   }
 
-  editRoom() {
-    showModalBottomSheet<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return new Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              new ListTile(
-                leading: new Icon(Icons.delete),
-                title: new Text('Delete Room'),
-                onTap: () {
-                  _showRoomDialog(widget.roomName, widget.roomId);
-                },
-              ),
-            ],
-          );
-        });
-  }
+  /// For Future Use
+  // editRoom() {
+  //   showModalBottomSheet<void>(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return new Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: <Widget>[
+  //             new ListTile(
+  //               leading: new Icon(Icons.delete),
+  //               title: new Text('Delete Room'),
+  //               onTap: () {
+  //                 _showRoomDialog(widget.roomName, widget.roomId);
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
 }

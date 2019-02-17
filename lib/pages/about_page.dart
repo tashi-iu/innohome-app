@@ -34,7 +34,7 @@ class AboutPage extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(24),
                 child: Text(
-                  "A quick brown fox jumped over the lazy dog. A quick brown fox jumped over the lazy dog. A quick brown fox jumped over the lazy dog. A quick brown fox jumped over the lazy dog. A quick brown fox jumped over the lazy dog. ",
+                  "innoHome app is used to control the products of the innoHome company. Our products include smart-switches and smart-plugs that be used from anywhere in the world using internet. The system is developed by a group of young Bhutanese entrepreneurs. Switch to 'smart' to make your lfe easier, convenient and save energy and time.",
                   style: TextStyle(
                       color: Colors.white.withOpacity(0.95), fontSize: 18),
                 ),
@@ -50,14 +50,21 @@ class AboutPage extends StatelessWidget {
               ),
               FlatButton(
                 child: Text(
-                  "innohome@gmail.com",
+                  "www.innohome.com",
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
                 onPressed: () {},
               ),
               FlatButton(
                 child: Text(
-                  "+97517777777",
+                  "innohome777@gmail.com",
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+                onPressed: () {},
+              ),
+              FlatButton(
+                child: Text(
+                  "+97517301354 / +97517324686 / +97517606708",
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
                 onPressed: () {},

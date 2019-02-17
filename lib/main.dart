@@ -12,7 +12,9 @@ import './scoped_model/scoped_room.dart';
 import './model/user.dart';
 
 void main() async {
+  
   print("this is main");
+
   var db = DatabaseHelper();
 
   User user = await db.getUser(1);
