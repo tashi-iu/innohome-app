@@ -7,7 +7,7 @@ description: A new Flutter project.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 1.0.0+1
+version: 1.1.1+1
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
@@ -61,6 +61,11 @@ flutter:
     - assets/bg.jpg
     - assets/login.jpg
     - assets/icon/icon.png
+    - assets/help/1.jpg
+    - assets/help/2.jpg
+    - assets/help/3.jpg
+    - assets/help/4.jpg
+    - assets/help/5.jpg
     
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

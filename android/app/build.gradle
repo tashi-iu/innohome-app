@@ -42,8 +42,8 @@ android {
         applicationId "com.innohome.smartswitch"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -51,7 +51,7 @@ android {
     release {
         keyAlias keystoreProperties['keyAlias']
         keyPassword keystoreProperties['keyPassword']
-        // storeFile file(keystoreProperties['storeFile'])
+        storeFile file(keystoreProperties['storeFile'])
         storePassword keystoreProperties['storePassword']
         }
     }

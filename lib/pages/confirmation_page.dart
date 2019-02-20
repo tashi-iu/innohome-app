@@ -91,20 +91,22 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
 
   Widget _confirmButton() {
     return LoginButton(
-      child: Text(
-        _loading ? CircularProgressIndicator() : "CONFIRM",
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            shadows: [
-              Shadow(
-                  color: Colors.deepPurple,
-                  offset: Offset(1, 1),
-                  blurRadius: 1),
-            ],
-            letterSpacing: 1.2),
-      ),
+      child: _loading
+          ? CircularProgressIndicator()
+          : Text(
+              "CONFIRM",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  shadows: [
+                    Shadow(
+                        color: Colors.deepPurple,
+                        offset: Offset(1, 1),
+                        blurRadius: 1),
+                  ],
+                  letterSpacing: 1.2),
+            ),
       gradient: LinearGradient(
         colors: <Color>[
           Colors.cyanAccent,
@@ -168,6 +170,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
             child: Padding(
               padding: EdgeInsets.all(18),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
                     text,

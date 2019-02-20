@@ -99,8 +99,8 @@ class _HousePageState extends State<HousePage> {
       child: ListView(
         children: <Widget>[
           ListTile(
-            title: Text("Help"),
-            leading: Icon(Icons.people),
+            title: Text("Help",),
+            leading: Icon(Icons.help),
             onTap: () {
               Navigator.push(this.context,
                   MaterialPageRoute(builder: (context) => HelpPage()));
