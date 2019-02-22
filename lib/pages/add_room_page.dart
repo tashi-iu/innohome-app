@@ -61,7 +61,13 @@ class _AddRoomState extends State<AddRoom> {
         ),
         validator: (value) {
           if (value.isEmpty) {
-            return "Make sure you entered the number of lights in your room";
+            return "Number of lights cannot be empty";
+          }
+          if (int.tryParse(value) == null){
+            return "Number of lights has to be an integer";
+          }
+          if (int.parse(value) == 0){
+            return "Value cannot be zero";
           }
         },
       ),
