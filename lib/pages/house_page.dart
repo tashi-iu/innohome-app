@@ -323,7 +323,6 @@ class _HousePageState extends State<HousePage> {
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
-                Divider(),
                 ScopedModelDescendant<RoomModel>(
                   builder: (BuildContext context, Widget child, Model model) {
                     return ListTile(
@@ -409,7 +408,6 @@ class _HousePageState extends State<HousePage> {
                         });
                   },
                 ),
-                Divider()
               ],
             ),
           );

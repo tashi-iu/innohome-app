@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:smart_switch_v2/pages/house_page.dart';
 
 class HelpPage extends StatefulWidget {
   @override
@@ -18,125 +19,140 @@ class _HelpPageState extends State<HelpPage> {
 
   final _kArrowColor = Colors.black.withOpacity(0.8);
 
-  final List<Widget> _pages = <Widget>[
-    ListView(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(8),
-          child: Image.asset(
-            "assets/help/1.jpg",
-            height: 600,
-          ),
-        ),
-        Padding(
-          child: Text(
-              "This is the main screen. Click on the 'Add Room' button to add your first room",
-              style: TextStyle(color: Colors.white),
-              textAlign: TextAlign.center),
-          padding: EdgeInsets.all(8),
-        )
-      ],
-    ),
-    ListView(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(8),
-          child: Image.asset(
-            "assets/help/2.jpg",
-            height: 600,
-          ),
-        ),
-        Padding(
-          child: Text(
-              "In this screen, fill in the form and click on the tick mark to save the room (Check your innoHome node device for the Room ID)",
-              style: TextStyle(color: Colors.white),
-              textAlign: TextAlign.center),
-          padding: EdgeInsets.all(8),
-        )
-      ],
-    ),
-    ListView(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(8),
-          child: Image.asset(
-            "assets/help/3.jpg",
-            height: 600,
-          ),
-        ),
-        Padding(
-          child: Text(
-              "You will then have added your first room! Tap on the white icon in the top-right corner to change connection mode (Internet or Local WiFi)",
-              style: TextStyle(color: Colors.white),
-              textAlign: TextAlign.center),
-          padding: EdgeInsets.all(8),
-        )
-      ],
-    ),
-    ListView(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(8),
-          child: Image.asset(
-            "assets/help/4.jpg",
-            height: 600,
-          ),
-        ),
-        Padding(
-          child: Text(
-              "If you have not connected your device to the innoHome wifi network, you will be asked to do so before you proceed to change your connection type. Connect to the innoHome Wifi network from your phone settings and tap 'Try again'",
-              style: TextStyle(color: Colors.white),
-              textAlign: TextAlign.center),
-          padding: EdgeInsets.all(8),
-        )
-      ],
-    ),
-    ListView(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(8),
-          child: Image.asset(
-            "assets/help/5.jpg",
-            height: 600,
-          ),
-        ),
-        Padding(
-          child: Text(
-              "Tap on the room in the main screen, you will be forwarded to a page similar to this. Tap the light switches to toggle the light switches.",
-              style: TextStyle(color: Colors.white),
-              textAlign: TextAlign.center),
-          padding: EdgeInsets.all(8),
-        )
-      ],
-    ),
-    Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Center(
-          child: Icon(
-            Icons.check,
-            size: 64,
-          ),
-        ),
-        Padding(
-          child: Text("That's it!",
-              style: TextStyle(color: Colors.white, fontSize: 64),
-              textAlign: TextAlign.center),
-          padding: EdgeInsets.all(8),
-        ),
-        Padding(
-          child: Text("Try out the app and save precious time with innoHome",
-              style: TextStyle(color: Colors.white, fontSize: 64),
-              textAlign: TextAlign.center),
-          padding: EdgeInsets.all(8),
-        ),
-      ],
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _pages = <Widget>[
+      ListView(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Image.asset(
+              "assets/help/1.jpg",
+              height: 600,
+            ),
+          ),
+          Padding(
+            child: Text(
+                "This is the main screen. Click on the 'Add Room' button to add your first room",
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.center),
+            padding: EdgeInsets.all(8),
+          )
+        ],
+      ),
+      ListView(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Image.asset(
+              "assets/help/2.jpg",
+              height: 600,
+            ),
+          ),
+          Padding(
+            child: Text(
+                "In this screen, fill in the form and click on the tick mark to save the room (Check your innoHome node device for the Room ID)",
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.center),
+            padding: EdgeInsets.all(8),
+          ),
+        ],
+      ),
+      ListView(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Image.asset(
+              "assets/help/3.jpg",
+              height: 600,
+            ),
+          ),
+          Padding(
+            child: Text(
+                "You will then have added your first room! Tap on the white icon in the top-right corner to change connection mode (Internet or Local WiFi)",
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.center),
+            padding: EdgeInsets.all(8),
+          )
+        ],
+      ),
+      ListView(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Image.asset(
+              "assets/help/4.jpg",
+              height: 600,
+            ),
+          ),
+          Padding(
+            child: Text(
+                "If you have not connected your device to the innoHome wifi network, you will be asked to do so before you proceed to change your connection type. Connect to the innoHome Wifi network from your phone settings and tap 'Try again'",
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.center),
+            padding: EdgeInsets.all(8),
+          )
+        ],
+      ),
+      ListView(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Image.asset(
+              "assets/help/5.jpg",
+              height: 600,
+            ),
+          ),
+          Padding(
+            child: Text(
+                "Tap on the room in the main screen, you will be forwarded to a page similar to this. Tap the light switches to toggle the light switches.",
+                style: TextStyle(color: Colors.white),
+                textAlign: TextAlign.center),
+            padding: EdgeInsets.all(8),
+          )
+        ],
+      ),
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: Icon(
+              Icons.check,
+              size: 128,
+              color: Colors.white,
+            ),
+          ),
+          Padding(
+            child: Text("That's it!",
+                style: TextStyle(color: Colors.white, fontSize: 48),
+                textAlign: TextAlign.center),
+            padding: EdgeInsets.all(8),
+          ),
+          Padding(
+            child: Text("Try out the app and save precious time with innoHome",
+                style: TextStyle(color: Colors.white, fontSize: 24),
+                textAlign: TextAlign.center),
+            padding: EdgeInsets.fromLTRB(8, 8, 8, 24),
+          ),
+          Center(
+            child: MaterialButton(
+              height: 48,
+              child: Text(
+                "EXPLORE APP",
+                style: TextStyle(color: Colors.cyan, fontSize: 24),
+              ),
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pushReplacement(this.context,
+                    MaterialPageRoute(builder: (context) => HousePage()));
+              },
+            ),
+          ),
+        ],
+      ),
+    ];
+
     return new Scaffold(
       backgroundColor: Colors.cyan,
       appBar: AppBar(
@@ -153,7 +169,8 @@ class _HelpPageState extends State<HelpPage> {
         child: new Stack(
           children: <Widget>[
             new PageView.builder(
-              physics: new AlwaysScrollableScrollPhysics(),
+              physics: BouncingScrollPhysics(),
+              itemCount: _pages.length,
               controller: _controller,
               itemBuilder: (BuildContext context, int index) {
                 return _pages[index % _pages.length];
@@ -164,7 +181,7 @@ class _HelpPageState extends State<HelpPage> {
               left: 0.0,
               right: 0.0,
               child: new Container(
-                color: Colors.grey[800].withOpacity(0.5),
+                color: Colors.grey[800].withOpacity(0.8),
                 padding: const EdgeInsets.all(20.0),
                 child: new Center(
                   child: new DotsIndicator(
