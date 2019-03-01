@@ -16,12 +16,12 @@ Future<Map> postData(String room, String switchName, String toggle, String xAuth
 
 
 //user signs up and get verification code.
-Future<Map> signUp(String email, String deviceId) async {
+Future<Map> signUp(String phone, String deviceId) async {
   String sourceURL = signUpEndPoint;
 
   Map<String, dynamic> body = {
-    "email": email,
-    "deviceId": deviceId,
+    "phoneNumber": "$phone",
+    "deviceId": "$deviceId",
   };
 
   try {
@@ -47,11 +47,11 @@ Future<Map> signUp(String email, String deviceId) async {
 }
 
 // Sign up verification
-Future<Map> verifySignUp(String email, String code) async {
+Future<Map> verifySignUp(String phone, String code) async {
   String sourceURL = verifySignUpEndPoint;
 
   Map<String, dynamic> body = {
-    "email": email,
+    "phoneNumber": phone,
     "verificationCode": code,
   };
 
@@ -83,11 +83,11 @@ Future<Map> verifySignUp(String email, String code) async {
 
 
 // Logim up verification
-Future<Map> verifyLogin(String email, String code) async {
+Future<Map> verifyLogin(String phone, String code) async {
   String sourceURL = verifyLoginEndPoint;
 
   Map<String, dynamic> body = {
-    "email": email,
+    "phoneNumber": phone,
     "loginCode": code,
   };
 
@@ -119,11 +119,11 @@ Future<Map> verifyLogin(String email, String code) async {
 }
 
 
-Future<Map> login(String email) async {
+Future<Map> login(String phone) async {
   String sourceURL = loginEndPoint;
 
   Map<String, dynamic> body = {
-    "email": email
+    "phoneNumber": "$phone"
   };
 
   try {
@@ -149,4 +149,36 @@ Future<Map> login(String email) async {
 
   return obj;
 }
+
+
+//user signs up and get verification code.
+Future<Map> resendSignUpCode(String phone) async {
+  String sourceURL = resendSignUpCodeEndPoint;
+
+  Map<String, dynamic> body = {
+    "phoneNumber": "$phone",
+  };
+
+  try {
+    http.Response response = await http.post(sourceURL,
+        headers: {'content-type': 'application/json'}, body: json.encode(body));
+    Map<String, dynamic> responseBody = json.decode(response.body);
+    Map<String, String> obj = {
+      "type": "${responseBody["type"]}",
+      "message": "${responseBody["message"]}",
+    };
+    return obj;
+
+  } catch (err) {
+    print("no network bahi");
+  }
+
+  Map<String, String> obj = {
+    "message": "null",
+    "type": "null",
+  };
+
+  return obj;
+}
+
 

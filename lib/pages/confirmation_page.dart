@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:smart_switch_v2/model/user.dart';
+import 'package:smart_switch_v2/widgets/error_popup.dart';
 
 import '../widgets/login_btn.dart';
 import '../widgets/login_field.dart';
@@ -12,9 +13,9 @@ import '../util/network_util.dart';
 import '../util/database_helper.dart';
 
 class ConfirmationPage extends StatefulWidget {
-  final String email;
+  final String phone;
   final String deviceId;
-  ConfirmationPage(this.email, this.deviceId);
+  ConfirmationPage(this.phone, this.deviceId);
   @override
   State<StatefulWidget> createState() => _ConfirmationPageState();
 }
@@ -23,6 +24,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
   var db = DatabaseHelper();
 
   bool _loading = false;
+  bool _resending = false;
 
   final _signUpKey = GlobalKey<FormState>();
   TextEditingController _verificationController = new TextEditingController();
@@ -62,14 +64,61 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
   }
 
   Widget _verifyPage() {
+    if (_resending) {
+      return Stack(
+        overflow: Overflow.visible,
+        children: <Widget>[
+          Opacity(
+            opacity: 0.3,
+            child: ModalBarrier(
+              dismissible: false,
+              color: Colors.black,
+            ),
+          ),
+          Center(
+            child: CircularProgressIndicator(),
+          )
+        ],
+      );
+    }
     return ListView(
       reverse: true,
       children: <Widget>[
         _confirmButton(),
         FlatButton(
           child: Text("RESEND CODE"),
-          onPressed: () {
-            Navigator.pop(context);
+          onPressed: () async {
+            setState(() {
+              _resending = true;
+            });
+
+            Map<String, String> response = await resendSignUpCode(widget.phone);
+
+            String message = response["message"];
+            String type = response["type"];
+
+            if (type == "null") {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ErrorPopup(
+                      text:
+                          "Signup failed. Check your internet connection and try again.",
+                    );
+                  });
+            } else if (type == "error") {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ErrorPopup(
+                      text: message,
+                    );
+                  });
+            }
+
+            setState(() {
+              _resending = false;
+            });
           },
         ),
         LoginInputTextField(
@@ -80,7 +129,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
         Padding(
           padding: EdgeInsets.symmetric(vertical: 18.0),
           child: Text(
-            "Please enter the code sent to your mail. Please check your spam folder.",
+            "Please enter the code sent to your phone.",
             style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
@@ -124,7 +173,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                   _loading = true;
                 });
                 Map<String, String> response =
-                    await verifySignUp(widget.email, code);
+                    await verifySignUp(widget.phone, code);
                 setState(() {
                   _loading = false;
                 });
@@ -136,7 +185,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                   _showDialog("You don't seem to be connected to the internet");
                 } else if (type == "error") {
                   _showDialog(
-                      "Unfortunately, there seems to be an error. Please try again later, or contact customer care");
+                      "$message");
                 } else if (type == "success") {
                   print(x_auth);
                   User user = User(x_auth, widget.deviceId);

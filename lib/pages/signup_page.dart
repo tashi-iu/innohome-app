@@ -19,38 +19,21 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPage extends State<SignUpPage> {
   final _signUpKey = GlobalKey<FormState>();
 
-  String email;
   String password;
   String deviceId;
   String username;
+  String phone;
   int noOfRooms;
 
   bool progress = false;
 
   var db = new DatabaseHelper();
 
-  String _validateEmail(String value) {
-    if (value.isEmpty) {
-      // The form is empty
-      return "Email address cannot be empty";
+  String _validatePhone(String value) {
+    if (value.isEmpty || value.length != 8 || int.tryParse(value) == null) {
+      return "Enter a valid phone number";
     }
-    //regular expression for email addresses
-    String p = "[a-zA-Z0-9\+\.\_\%\-\+]{1,256}" +
-        "\\@" +
-        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
-        "(" +
-        "\\." +
-        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
-        ")+";
-    RegExp regExp = new RegExp(p);
-
-    if (regExp.hasMatch(value)) {
-      //the email is valid
-      return null;
-    }
-
-    // The pattern of the email didn't match the regex above.
-    return 'Email is not valid';
+    return null;
   }
 
   String _validateDeviceId(String value) {
@@ -63,8 +46,6 @@ class _SignUpPage extends State<SignUpPage> {
     }
     return null;
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -115,14 +96,14 @@ class _SignUpPage extends State<SignUpPage> {
           obscureText: false,
         ),
         LoginInputTextField(
-          labelText: "Email address",
-          hintText: "dorji@gmail.bt",
-          prefixIcon: Icon(Icons.email),
-          keyboardType: TextInputType.emailAddress,
-          validator: _validateEmail,
+          labelText: "Phone Number",
+          hintText: "17654321",
+          prefixIcon: Icon(Icons.phone),
+          keyboardType: TextInputType.number,
+          validator: _validatePhone,
           controller: null,
           onSaved: (value) {
-            this.email = value;
+            this.phone = value;
           },
           obscureText: false,
         ),
@@ -173,7 +154,7 @@ class _SignUpPage extends State<SignUpPage> {
               if (_signUpKey.currentState.validate()) {
                 _signUpKey.currentState.save();
 
-                Map<String, String> response = await signUp(email, deviceId);
+                Map<String, String> response = await signUp(phone, deviceId);
 
                 String message = response["message"];
                 String type = response["type"];
@@ -199,11 +180,10 @@ class _SignUpPage extends State<SignUpPage> {
                         );
                       });
                 } else if (type == "success") {
-                  
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ConfirmationPage(email, deviceId),
+                      builder: (context) => ConfirmationPage(phone, deviceId),
                     ),
                   );
                 }

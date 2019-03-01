@@ -20,27 +20,13 @@ class _LoginPageState extends State<LoginPage> {
   final _signUpKey = GlobalKey<FormState>();
 
   var db = DatabaseHelper();
-  String email;
+  String phone;
 
-  String _validateEmail(String value) {
-    if (value.isEmpty) {
-      // The form is empty
-      return "Email address cannot be empty";
+  String _validatePhone(String value) {
+    if (value.isEmpty || value.length != 8 || int.tryParse(value) == null) {
+      return "Enter a valid phone number";
     }
-    //regular expression for email addresses
-    String p = "[a-zA-Z0-9\+\.\_\%\-\+]{1,256}" +
-        "\\@" +
-        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
-        "(" +
-        "\\." +
-        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
-        ")+";
-    RegExp regExp = new RegExp(p);
-
-    if (regExp.hasMatch(value)) {
-      //the email is valid
-      return null;
-    }
+    return null;
   }
 
   bool _awaitLogIn = false;
@@ -78,117 +64,133 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _loginPage() {
-    return ListView(reverse: true, children: <Widget>[
-      Padding(
-        padding: EdgeInsets.only(bottom: 20),
-      ),
-          LoginButton(
-            child: _awaitLogIn
-                ? CircularProgressIndicator()
-                : Text(
-                    "LOG IN",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      shadows: [
-                        Shadow(
-                            color: Colors.deepPurple,
-                            offset: Offset(1, 1),
-                            blurRadius: 1),
-                      ],
-                    ),
+    return ListView(
+      reverse: true,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(bottom: 20),
+        ),
+        LoginButton(
+          child: _awaitLogIn
+              ? CircularProgressIndicator()
+              : Text(
+                  "LOG IN",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    shadows: [
+                      Shadow(
+                          color: Colors.deepPurple,
+                          offset: Offset(1, 1),
+                          blurRadius: 1),
+                    ],
                   ),
-            gradient: LinearGradient(
-              colors: <Color>[
-                Colors.cyanAccent,
-                Colors.blue[600],
-                Colors.blue[800],
-                Colors.deepPurple[900]
-              ],
-            ),
-            onPressed: _awaitLogIn
-                ? () {
-                    return null;
-                  }
-                : () async {
-                    if (_signUpKey.currentState.validate()) {
-                      _signUpKey.currentState.save();
-                      print("validation completed");
-                      print("$email");
-                      setState(() {
-                        _awaitLogIn = true;
-                      });
-                      Map<String, String> response = await login(email);
-                      //   Map<String, String> response = await login(email, password);
-                      setState(() {
-                        _awaitLogIn = false;
-                      });
+                ),
+          gradient: LinearGradient(
+            colors: <Color>[
+              Colors.cyanAccent,
+              Colors.blue[600],
+              Colors.blue[800],
+              Colors.deepPurple[900]
+            ],
+          ),
+          onPressed: _awaitLogIn
+              ? () {
+                  return null;
+                }
+              : () async {
+                  if (_signUpKey.currentState.validate()) {
+                    _signUpKey.currentState.save();
+                    print("validation completed");
+                    print("$phone");
+                    setState(() {
+                      _awaitLogIn = true;
+                    });
+                    Map<String, String> response = await login(phone);
+                    //   Map<String, String> response = await login(email, password);
+                    setState(() {
+                      _awaitLogIn = false;
+                    });
 
-                      String message = response["message"];
-                      String type = response["type"];
-                      
-                      if(type=="null"){
-                        //no network error To do Tashi
-                      }else if(type == "error"){
-                        //to do tashi error pop up
-                        print(message);
-                      }else if(type == "success"){
-                        Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginConfirmationPage(email),
-                    ),
-                  );
-                      }
-                      //   if (error_message == "null" && x_auth == "null") {
-                      //     showDialog(
-                      //         context: context,
-                      //         builder: (context) {
-                      //           return ErrorPopup(
-                      //             text:
-                      //                 "Could not connect to server. Check your connection and try again",
-                      //           );
-                      //         });
-                      //   } else if (x_auth == "null") {
-                      //     showDialog(
-                      //         context: context,
-                      //         builder: (context) {
-                      //           return ErrorPopup(
-                      //             text:
-                      //                 "Login failed. Make sure you are registered and recheck the fields.",
-                      //           );
-                      //         });
-                      //   } else if (error_message == "null") {
-                      //     User user = User(response["x_auth"], "qwertyuiop");
-                      //     int result = await db.saveUser(user);
+                    String message = response["message"];
+                    String type = response["type"];
 
-                      //     if (result != 0) {
-                      //       Navigator.pushReplacementNamed(context, "/rooms");
-                      //     }
-                      //   }
+                    if (type == "null") {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ErrorPopup(
+                              text:
+                                  "Signup failed. Check your internet connection and try again.",
+                            );
+                          });
+                    } else if (type == "error") {
+                      print(message);
+                      print("hello from error");
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ErrorPopup(
+                              text: message,
+                            );
+                          });
+                    } else if (type == "success") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginConfirmationPage(phone),
+                        ),
+                      );
                     }
-                  },
+                    //   if (error_message == "null" && x_auth == "null") {
+                    //     showDialog(
+                    //         context: context,
+                    //         builder: (context) {
+                    //           return ErrorPopup(
+                    //             text:
+                    //                 "Could not connect to server. Check your connection and try again",
+                    //           );
+                    //         });
+                    //   } else if (x_auth == "null") {
+                    //     showDialog(
+                    //         context: context,
+                    //         builder: (context) {
+                    //           return ErrorPopup(
+                    //             text:
+                    //                 "Login failed. Make sure you are registered and recheck the fields.",
+                    //           );
+                    //         });
+                    //   } else if (error_message == "null") {
+                    //     User user = User(response["x_auth"], "qwertyuiop");
+                    //     int result = await db.saveUser(user);
+
+                    //     if (result != 0) {
+                    //       Navigator.pushReplacementNamed(context, "/rooms");
+                    //     }
+                    //   }
+                  }
+                },
+        ),
+        LoginInputTextField(
+          labelText: "Phone Number",
+          keyboardType: TextInputType.number,
+          hintText: "17654321",
+          obscureText: false,
+          validator: _validatePhone,
+          onSaved: (value) {
+            this.phone = value;
+          },
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 18.0),
+          child: Text(
+            "Log In",
+            style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
+            textAlign: TextAlign.center,
           ),
-          LoginInputTextField(
-            labelText: "Email",
-            keyboardType: TextInputType.emailAddress,
-            hintText: "dorji72@gmail.com",
-            obscureText: false,
-            validator: _validateEmail,
-            onSaved: (value) {
-              this.email = value;
-            },
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 18.0),
-            child: Text(
-              "Log In",
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 }

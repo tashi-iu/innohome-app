@@ -12,9 +12,9 @@ import '../util/network_util.dart';
 import '../util/database_helper.dart';
 
 class LoginConfirmationPage extends StatefulWidget {
-  final String email;
+  final String phone;
 
-  LoginConfirmationPage(this.email);
+  LoginConfirmationPage(this.phone);
 
   @override
   State<StatefulWidget> createState() => _LoginConfirmationPageState();
@@ -127,7 +127,7 @@ class _LoginConfirmationPageState extends State<LoginConfirmationPage> {
                   _loading = true;
                 });
                 Map<String, String> response =
-                    await verifyLogin(widget.email, code);
+                    await verifyLogin(widget.phone, code);
                 setState(() {
                   _loading = true;
                 });

@@ -52,14 +52,14 @@ class AboutPage extends StatelessWidget {
               ),
               FlatButton(
                 child: Text(
-                  "innohome777@gmail.com",
+                  "innohome2018@gmail.com",
                   style: TextStyle(color: Colors.cyan, fontSize: 18),
                 ),
                 onPressed: () {},
               ),
               FlatButton(
                 child: Text(
-                  "+97517301354 / +97517324686 / +97517606708",
+                  "+97517301354 | +97517324686 | +97517606708",
                   style: TextStyle(color: Colors.cyan, fontSize: 18),
                 ),
                 onPressed: () {},
