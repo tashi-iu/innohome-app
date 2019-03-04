@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 ///data/user/0/com.innohome.smartswitch/app_flutter/smartSwitch.db
 import 'package:flutter/material.dart';
 import 'package:smart_switch_v2/model/user.dart';
@@ -81,7 +82,7 @@ class _LoginConfirmationPageState extends State<LoginConfirmationPage> {
         Padding(
           padding: EdgeInsets.symmetric(vertical: 18.0),
           child: Text(
-            "Please enter the code sent to your phone.",
+            "Please enter the code sent to your phone",
             style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
@@ -126,13 +127,12 @@ class _LoginConfirmationPageState extends State<LoginConfirmationPage> {
                 setState(() {
                   _loading = true;
                 });
-                
+
                 Map<String, String> response =
                     await verifyLogin(widget.phone, code);
                 setState(() {
-                  _loading = true;
-                })
-                ;
+                  _loading = false;
+                });
                 String x_auth = response["x-auth"];
                 String message = response["message"];
                 String type = response["type"];
@@ -163,24 +163,24 @@ class _LoginConfirmationPageState extends State<LoginConfirmationPage> {
             child: Padding(
               padding: EdgeInsets.all(18),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
                     text,
                     style: TextStyle(fontSize: 18),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 18),
-                    child: FlatButton(
-                      child: Text(
-                        "Dismiss",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.red),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                  Padding(padding: EdgeInsets.only(bottom: 8),),
+                  Divider(),
+                  FlatButton(
+                    child: Text(
+                      "Dismiss",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.red),
                     ),
-                  )
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
                 ],
               ),
             ),

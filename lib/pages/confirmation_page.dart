@@ -129,7 +129,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
         Padding(
           padding: EdgeInsets.symmetric(vertical: 18.0),
           child: Text(
-            "Please enter the code sent to your phone.",
+            "Please enter the code sent to your phone",
             style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
