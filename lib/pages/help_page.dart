@@ -144,8 +144,7 @@ class _HelpPageState extends State<HelpPage> {
               ),
               color: Colors.white,
               onPressed: () {
-                Navigator.pushReplacement(this.context,
-                    MaterialPageRoute(builder: (context) => HousePage()));
+                Navigator.pushReplacementNamed(context, "/rooms");
               },
             ),
           ),
