@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+///data/user/0/com.innohome.smartswitch/app_flutter/smartSwitch.db
 import 'package:flutter/material.dart';
 import 'package:smart_switch_v2/model/user.dart';
 
@@ -81,7 +81,7 @@ class _LoginConfirmationPageState extends State<LoginConfirmationPage> {
         Padding(
           padding: EdgeInsets.symmetric(vertical: 18.0),
           child: Text(
-            "Please enter the code sent to your mail. Please check your spam folder.",
+            "Please enter the code sent to your phone.",
             style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
@@ -126,11 +126,13 @@ class _LoginConfirmationPageState extends State<LoginConfirmationPage> {
                 setState(() {
                   _loading = true;
                 });
+                
                 Map<String, String> response =
                     await verifyLogin(widget.phone, code);
                 setState(() {
                   _loading = true;
-                });
+                })
+                ;
                 String x_auth = response["x-auth"];
                 String message = response["message"];
                 String type = response["type"];
@@ -139,30 +141,12 @@ class _LoginConfirmationPageState extends State<LoginConfirmationPage> {
                 if (type == "null") {
                   _showDialog("You don't seem to be connected to the internet");
                 } else if (type == "error") {
-                  _showDialog(
-                      "Unfortunately, there seems to be an error. Please try again later, or contact customer care");
+                  _showDialog("$message");
                 } else if (type == "success") {
-                  User user = await db.getUser(1);
-
-                  if (user == null) {
-                    User user = User(x_auth, deviceId);
-                    int res = await db.saveUser(user);
-                    if (res != 0) {
-                      print("user saved login");
-                      Navigator.pushReplacementNamed(context, "/rooms");
-                    }
-                  }
-                  Map<String, dynamic> obj = user.toMap();
-                  User updatedUser = User.fromMap({
-                    "id": obj["id"],
-                    "userToken": x_auth,
-                    "deviceId": obj["deviceId"]
-                  });
-
-                  int res = await db.updateUser(updatedUser);
-
+                  User user = User(x_auth, deviceId);
+                  int res = await db.saveUser(user);
                   if (res != 0) {
-                    print("user updated");
+                    print("user saved login");
                     Navigator.pushReplacementNamed(context, "/rooms");
                   }
                 }

@@ -196,7 +196,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                     print("user saved");
                     Navigator.pushReplacementNamed(context, "/rooms");
                   } else {
-                    print("error ");
+                    _showDialog("Could not save to local database, try again");
                   }
                 }
 

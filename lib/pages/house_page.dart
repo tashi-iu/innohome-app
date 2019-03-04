@@ -30,7 +30,7 @@ class _HousePageState extends State<HousePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool connected = false;
   @override
-  void initState() {
+  void initState(){
     super.initState();
     widget.model.getRooms();
   }
@@ -118,16 +118,19 @@ class _HousePageState extends State<HousePage> {
             title: Text("Log Out"),
             leading: Icon(Icons.exit_to_app),
             onTap: () async {
-              Directory documentDirectory =
-                  await getApplicationDocumentsDirectory();
+              int res1 = await db.deleteAllUser();
+              int res2 = await db.deleteAllHouse();
+              int res3 =await db.deleteAllRoom();
+              int res4 = await db.deleteAllLight();
 
-              String path = join(documentDirectory.path, "smartSwitch.db");
+              print("$res1, $res2, $res3, $res4");
 
-              await deleteDatabase(path);
-
+              if(res1 != 0){
               Navigator.pushReplacement(this.context,
                   MaterialPageRoute(builder: (context) => LandingPage()));
-            },
+            }else{
+              print("error logging out");
+            }},
           ),
           // Container(
           //   child: Text(

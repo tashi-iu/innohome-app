@@ -25,7 +25,7 @@ class DatabaseHelper {
   final String columnHouseId = "id";
   final String columnHouseName = "houseName";
 
-  final String tableRoom = "roomTable";  
+  final String tableRoom = "roomTable";
   final String columnRoomId = "id";
   final String columnRoomName = "roomName";
   final String columnRoomImage = "roomImage";
@@ -54,21 +54,21 @@ class DatabaseHelper {
   initDb() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentDirectory.path, "smartSwitch.db");
-
+    print(path);
     var smartSwitchDb =
         await openDatabase(path, version: 1, onCreate: _onCreate);
     return smartSwitchDb;
   }
 
   void _onCreate(Database db, int vesion) async {
-      await db.execute("""
+    await db.execute("""
             CREATE TABLE $tableUser(
               $columnUserId INTEGER PRIMARY KEY NOT NULL,
               $columnUserToken TEXT,
               $columnDeviceId TEXT NOT NULL
             )""");
-      
-      await db.execute("""
+
+    await db.execute("""
             CREATE TABLE $tableHouse(
               $columnHouseId INTEGER PRIMARY KEY,
               $columnHouseName TEXT NOT NULL 
@@ -96,7 +96,6 @@ class DatabaseHelper {
       """);
   }
 
-
   //USER ORM
   Future<int> saveUser(User user) async {
     var dbClient = await db;
@@ -108,15 +107,17 @@ class DatabaseHelper {
   Future<int> updateUser(User user) async {
     var dbClient = await db;
 
-    int res = await dbClient.update(tableUser, user.toMap(), where: "$columnUserId = ?", whereArgs: [user.id]);
+    int res = await dbClient.update(tableUser, user.toMap(),
+        where: "$columnUserId = ?", whereArgs: [user.id]);
     return res;
   }
 
   Future<User> getUser(int id) async {
     var dbClient = await db;
 
-    var result = await dbClient.rawQuery("SELECT * FROM $tableUser WHERE $columnUserId=$id");
-    if(result.length == 0) return null;
+    var result = await dbClient
+        .rawQuery("SELECT * FROM $tableUser WHERE $columnUserId=$id");
+    if (result.length == 0) return null;
 
     return User.fromMap(result.first);
   }
@@ -148,8 +149,9 @@ class DatabaseHelper {
   Future<House> getHouse(int id) async {
     var dbClient = await db;
 
-    var result = await dbClient.rawQuery("SELECT * FROM $tableHouse WHERE $columnHouseId=$id");
-    if(result.length == 0) return null;
+    var result = await dbClient
+        .rawQuery("SELECT * FROM $tableHouse WHERE $columnHouseId=$id");
+    if (result.length == 0) return null;
 
     return House.fromMap(result.first);
   }
@@ -162,11 +164,11 @@ class DatabaseHelper {
   //Room ORM
 
   //inserting a room
-  Future<int> saveRoom(Room room) async{
+  Future<int> saveRoom(Room room) async {
     var dbClient = await db;
 
     var result = await dbClient.insert("$tableRoom", room.toMap());
-    return result;    
+    return result;
   }
 
   //getting all the rooms
@@ -181,9 +183,10 @@ class DatabaseHelper {
   Future<Room> getRoom(int id) async {
     var dbClient = await db;
 
-    List<Map> result = await dbClient.rawQuery("SELECT * FROM $tableRoom WHERE $columnRoomId=$id");
+    List<Map> result = await dbClient
+        .rawQuery("SELECT * FROM $tableRoom WHERE $columnRoomId=$id");
 
-    if(result.length == 0) return null;
+    if (result.length == 0) return null;
 
     return Room.fromMap(result.first);
   }
@@ -192,39 +195,44 @@ class DatabaseHelper {
   Future<int> updateRoom(Room room) async {
     var dbClient = await db;
 
-    return await dbClient.update("$tableRoom", room.toMap(), where: "$columnRoomId = ?", whereArgs: [room.id]);
+    return await dbClient.update("$tableRoom", room.toMap(),
+        where: "$columnRoomId = ?", whereArgs: [room.id]);
   }
 
   //deleting a room
   Future<int> deleteRoom(int id) async {
     var dbClient = await db;
 
-    return dbClient.delete(tableRoom, where: "$columnRoomId = ?", whereArgs: [id]);
+    return dbClient
+        .delete(tableRoom, where: "$columnRoomId = ?", whereArgs: [id]);
   }
 
   //light orm
   //inserting a light
-  Future<int> saveLight(Light light) async{
+  Future<int> saveLight(Light light) async {
     var dbClient = await db;
 
     var result = await dbClient.insert("$tableLight", light.toMap());
-    return result;    
+    return result;
   }
 
   //getting all the lights
   Future<List> getAllLights(int id) async {
     var dbClient = await db;
-    var result = await dbClient.rawQuery("SELECT * FROM $tableLight WHERE $columnForeignRoomId=$id");
+    var result = await dbClient
+        .rawQuery("SELECT * FROM $tableLight WHERE $columnForeignRoomId=$id");
 
     return result.toList();
   }
+
   //getting a light from id
   Future<Light> getLight(int id) async {
     var dbClient = await db;
 
-    List<Map> result = await dbClient.rawQuery("SELECT * FROM $tableLight WHERE $columnLightId=$id");
+    List<Map> result = await dbClient
+        .rawQuery("SELECT * FROM $tableLight WHERE $columnLightId=$id");
 
-    if(result.length == 0) return null;
+    if (result.length == 0) return null;
 
     return Light.fromMap(result.first);
   }
@@ -233,20 +241,48 @@ class DatabaseHelper {
   Future<int> updateLight(Light light) async {
     var dbClient = await db;
 
-    return await dbClient.update("$tableLight", light.toMap(), where: "$columnRoomId = ?", whereArgs: [light.id]);
+    return await dbClient.update("$tableLight", light.toMap(),
+        where: "$columnRoomId = ?", whereArgs: [light.id]);
   }
 
   //deleting a light
   Future<int> deleteLight(int id) async {
     var dbClient = await db;
 
-    return dbClient.delete(tableLight, where: "$columnLightId = ?", whereArgs: [id]);
-  }  
+    return dbClient
+        .delete(tableLight, where: "$columnLightId = ?", whereArgs: [id]);
+  }
 
   Future<int> deleteLights(int roomId) async {
     var dbClient = await db;
-    return dbClient.delete(tableLight, where: "$columnForeignRoomId = ?", whereArgs: [roomId]);
+    return dbClient.delete(tableLight,
+        where: "$columnForeignRoomId = ?", whereArgs: [roomId]);
+  }
 
+  Future<int> deleteAllUser() async {
+    var dbClient = await db;
+
+    return await dbClient.delete("$tableUser");
+  }
+
+
+  Future<int> deleteAllHouse() async {
+    var dbClient = await db;
+
+    return await dbClient.delete("$tableHouse");
+  }
+
+
+  Future<int> deleteAllRoom() async {
+    var dbClient = await db;
+
+    return await dbClient.delete("$tableRoom");
+  }
+
+
+  Future<int> deleteAllLight() async {
+    var dbClient = await db;
+
+    return await dbClient.delete("$tableLight");
   }
 }
-
