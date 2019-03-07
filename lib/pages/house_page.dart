@@ -229,53 +229,53 @@ class _HousePageState extends State<HousePage> {
           );
         },
       ),
-      bottomNavigationBar: ScopedModelDescendant<RoomModel>(
-        builder: (context, child, model) {
-          if (model.local) {
-            return InkWell(
-              child: Container(
-                height: 48,
-                color: model.mqttState ? Colors.cyan : Colors.red,
-                child: Center(
-                  child: model.mqttStateChecking
-                      ? LinearProgressIndicator()
-                      : Text(
-                          model.mqttState
-                              ? "Connection Established"
-                              : "You are not connected. Tap here to connect",
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white.withOpacity(0.85)),
-                        ),
-                ),
-              ),
-              onTap: () {
-                if (!model.mqttState) {
-                  setState(() {
-                    model.mqttStateChecking = true;
-                  });
-                  model.mqtt.checkMqttConnectionLocal();
-                  setState(() {
-                    model.mqttStateChecking = false;
-                    model.mqttState = true;
-                  });
-                } else {
-                  setState(() {
-                    model.mqttState = false;
-                  });
-                  print("MQTT OFF");
-                }
-              },
-            );
-          }
-          return Visibility(
-            visible: false,
-            child: Container(
-              height: 1,
-            ),
-          );
-        },
-      ),
+      // bottomNavigationBar: ScopedModelDescendant<RoomModel>(
+      //   builder: (context, child, model) {
+      //     if (model.local) {
+      //       return InkWell(
+      //         child: Container(
+      //           height: 48,
+      //           color: model.mqttState ? Colors.cyan : Colors.red,
+      //           child: Center(
+      //             child: model.mqttStateChecking
+      //                 ? LinearProgressIndicator()
+      //                 : Text(
+      //                     model.mqttState
+      //                         ? "Connection Established"
+      //                         : "You are not connected. Tap here to connect",
+      //                     style: TextStyle(
+      //                         fontSize: 14,
+      //                         color: Colors.white.withOpacity(0.85)),
+      //                   ),
+      //           ),
+      //         ),
+      //         onTap: () {
+      //           if (!model.mqttState) {
+      //             setState(() {
+      //               model.mqttStateChecking = true;
+      //             });
+      //             model.mqtt.checkMqttConnectionLocal();
+      //             setState(() {
+      //               model.mqttStateChecking = false;
+      //               model.mqttState = true;
+      //             });
+      //           } else {
+      //             setState(() {
+      //               model.mqttState = false;
+      //             });
+      //             print("MQTT OFF");
+      //           }
+      //         },
+      //       );
+      //     }
+      //     return Visibility(
+      //       visible: false,
+      //       child: Container(
+      //         height: 1,
+      //       ),
+      //     );
+      //   },
+      // ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
