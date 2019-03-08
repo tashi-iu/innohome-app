@@ -68,6 +68,7 @@ class _HousePageState extends State<HousePage> {
             if (widget.model.local) {
               String _ssid = await Wifi.ssid;
               if (_ssid.toLowerCase().contains("innohome")) {
+              widget.model.mqtt.checkMqttConnectionLocal();
                 setState(() {
                   connected = true;
                 });

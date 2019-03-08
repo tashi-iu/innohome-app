@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smart_switch_v2/pages/access_point_page.dart';
 
 import '../util/database_helper.dart';
 import '../model/house.dart';
@@ -74,6 +75,25 @@ class _SettingsState extends State<Settings> {
       onPressed: () {
         Navigator.pop(context);
       },
+    );
+  }
+
+  Widget _buildAPCredentials() {
+    return ListTile(
+      onTap: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => AccessPointPage()));
+      },
+      title: Text("Change house name"),
+      subtitle: Text(
+          this.houseName.isEmpty ? "House name not provided" : this.houseName),
+      leading: Padding(
+        padding: EdgeInsets.only(left: 8),
+        child: Icon(
+          Icons.home,
+          color: Colors.cyan,
+        ),
+      ),
     );
   }
 
